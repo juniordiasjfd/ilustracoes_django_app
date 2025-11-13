@@ -1,0 +1,96 @@
+{% load static %}
+{% load bootstrap4 %}
+{% load custom_filters %}
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Componentes</title>
+    {% bootstrap_css %}
+</head>
+
+<body>
+    {% include '_nav.html' %}
+    <div class="container mt-4">
+
+
+        <h1>Componentes ativos</h1>
+        <a href="{% url 'novo_componente' %}" class="btn btn-outline-primary my-2 my-sm-0" role="button">
+            + componente
+        </a>
+        <button class="btn btn-success btn-sm"
+                        onclick="exportTableToCSV('tabela_de_componentes', 'componentes.csv')">
+                        Exportar para CSV
+                    </button>
+                    <button class="btn btn-success btn-sm"
+                        onclick="exportTable('tabela_de_componentes', 'xlsx', 'componentes');">
+                        Exportar para Excel
+                    </button>
+        <table class="table table-striped" id="tabela_de_componentes">
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>Criado em</th>
+                    <th>Modificado em</th>
+                    <th>Ativo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in componentes_ativos %}
+
+                <tr>
+                    <td>{{ p.nome }}</td>
+                    <td>{{ p.criado_em | date:"d/m/y" }}</td>
+                    <td>{{ p.modificado_em | date:"d/m/y" }}</td>
+                    <td>{{ p.ativo|boolean_to_icon }}</td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+    </div>
+
+    <div class="container">
+        <h1>Componentes arquivados</h1>
+
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>Criado em</th>
+                    <th>Modificado em</th>
+                    <th>Ativo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in componentes_arquivados %}
+
+                <tr>
+                    <td>{{ p.nome }}</td>
+                    <td>{{ p.criado_em | date:"d/m/y" }}</td>
+                    <td>{{ p.modificado_em | date:"d/m/y" }}</td>
+                    <td>{{ p.ativo|boolean_to_icon }}</td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="d-block" style="height: 300px;"></div>
+    {% bootstrap_javascript jquery='full' %}
+
+    <!-- Scripts para exportação de dados em CSV e Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/js/tableexport.min.js"></script>
+    <script src="{% static 'planilha/js/scripts.js' %}"></script>
+</body>
+
+</html>

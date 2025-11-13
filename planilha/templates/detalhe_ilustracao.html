@@ -1,0 +1,71 @@
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhe</title>
+    {% bootstrap_css %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+</head>
+
+<body>
+    {% include '_nav.html' %}
+    <div class="container mt-4">
+        <h1>Editar ilustração: {{ object.retranca }}</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% bootstrap_form form %}
+
+            <button type="submit" class="btn btn-success">Salvar alterações</button>
+            <a href="{% url 'ilustras' %}" class="btn btn-secondary">Cancelar</a>
+
+        </form>
+
+        <hr>
+
+        {% if object.ativo == True %}
+        <form action="{% url 'deletar_ilustracao' object.pk %}" method="post" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger"
+                onclick="return confirm('ATENÇÃO: Você tem certeza que deseja EXCLUIR (Inativar) esta ilustração?');">
+                Excluir ilustração (Inativar)
+            </button>
+        </form>
+        {% else %}
+        <form action="{% url 'reativar_ilustracao' object.pk %}" method="post" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">
+                Reativar ilustração
+            </button>
+        </form>
+        {% endif %}
+
+        <div class="auditoria-info mt-5">
+            <h2>Detalhes de auditoria</h2>
+            <p>
+                <strong>Criado por:</strong> {{ object.criado_por }}
+            </p>
+            <p>
+                <strong>Criado em:</strong> {{ object.criado_em|date:"d/m/Y H:i" }}
+            </p>
+            <p>
+                <strong>Atualizado por:</strong> {{ object.atualizado_por }}
+            </p>
+            <p>
+                <strong>Atualizado em:</strong> {{ object.modificado_em|date:"d/m/Y H:i" }}
+            </p>
+        </div>
+
+    </div>
+    <div class="d-block" style="height: 300px;"></div>
+    {% bootstrap_javascript jquery='full' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    {% include '_select2.html' %}
+</body>
+
+</html>

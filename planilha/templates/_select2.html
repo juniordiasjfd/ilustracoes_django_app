@@ -1,0 +1,34 @@
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        // ----------------------------------------------------
+        // FUNCIONALIDADE DE LISTA SUPENSA COM BUSCA
+        // ----------------------------------------------------
+        // Inicializa Select2 em todos os campos
+        $('select').select2({
+             placeholder: "Clique para selecionar...",
+             allowClear: true
+        });
+
+        // Adiciona a funcionalidade de placeholder de busca
+        $('select').on('select2:open', function() {
+            // Seletor para a caixa de texto de busca dentro do dropdown
+            let searchField = $('.select2-search--dropdown .select2-search__field');
+
+            // Define o placeholder para o campo de busca
+            searchField.attr('placeholder', 'Digite para filtrar...');
+        });
+
+        // ----------------------------------------------------
+        // INICIALIZAÇÃO DATEPICKER (Novo código necessário)
+        // ----------------------------------------------------
+        $('.datepicker').datepicker({
+            format: 'dd/mm/yyyy', // Formato para exibição
+            language: 'pt-BR',    // Usa o arquivo de localização brasileiro
+            autoclose: true,      // Fecha ao selecionar a data
+            todayHighlight: true  // Destaca o dia de hoje
+        });
+    });
+    </script>
+

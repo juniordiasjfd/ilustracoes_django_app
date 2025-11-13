@@ -1,0 +1,55 @@
+{% extends 'usuario/modelo.html' %}
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block titulo %}
+    <title>Preferências</title>
+{% endblock %}
+
+
+{% block conteudo %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="container mx-auto">
+
+                <h1>Preferências de pré-filtragem</h1>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-light mt-3">Salvar</button>
+                </form>
+
+                <!-- https://www.youtube.com/watch?v=zTOWeyOu1dM&list=PLjv17QYEBJPpd6nI-MXpIa4qR7prKfPQz&index=22 -->
+
+                <hr class="mt-5 mb-5">
+
+                {# ------------------------------------------------------------- #}
+                {# Lógica de Verificação de Grupo #}
+                
+                {% if is_coordenador %} 
+                    
+                    <h2 class="text-primary">Administração de usuários</h2>
+                    
+                    <p>Acesse o painel para ativar, desativar ou alterar as permissões dos usuários.</p>
+                    
+                    <a href="{% url 'gerenciar_usuarios_todos' %}" class="btn btn-info btn-lg">
+                        <i class="fas fa-users-cog"></i> Gerenciar todos os usuários
+                    </a>
+                
+                {% else %}
+                    
+                    {# else: Conteúdo em branco ou mensagem para outros usuários #}
+                    <!-- <p class="text-muted">Você não possui permissão de Coordenador para gerenciar usuários.</p> -->
+                    
+                {% endif %}
+                
+                {# ------------------------------------------------------------- #}
+
+            </div>
+        </div>
+        
+    </div>
+{% endblock %}
+

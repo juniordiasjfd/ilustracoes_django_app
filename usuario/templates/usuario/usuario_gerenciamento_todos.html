@@ -1,0 +1,122 @@
+{% extends 'usuario/modelo.html' %}
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block titulo %}
+<title>Usuários</title>
+{% endblock %}
+
+
+{% block conteudo %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 mx-auto">
+
+
+            <h1>Gerenciamento de usuários</h1>
+
+            ---
+
+            <h2>Usuários ativos ({{ usuarios_ativos|length }})</h2>
+
+            {% if usuarios_ativos %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>E-mail</th>
+                        <th>Grupos</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in usuarios_ativos %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {# Itera sobre os grupos para exibir os nomes #}
+                            {% for group in user.groups.all %}
+                            <span class="badge bg-success">{{ group.name }}</span>
+                            {% empty %}
+                            -
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {# O campo correto é 'is_active', e não 'is_activate' #}
+                            <span class="badge bg-success">Ativo</span>
+                        </td>
+                        <td>
+                            {# Link para a view de atualização/gerenciamento do usuário #}
+                            <a href="{% url 'gerenciar_usuario' user.pk %}"
+                                class="btn btn-sm btn-warning">Gerenciar/Desativar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Nenhum usuário ativo encontrado.</p>
+            {% endif %}
+
+            ---
+
+            <h2>Usuários desativados ({{ usuarios_desativados|length }})</h2>
+
+            {% if usuarios_desativados %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>E-mail</th>
+                        <th>Grupos</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in usuarios_desativados %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% for group in user.groups.all %}
+                            <span class="badge bg-secondary">{{ group.name }}</span>
+                            {% empty %}
+                            -
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {# Status Desativado #}
+                            <span class="badge bg-danger">Desativado</span>
+                        </td>
+                        <td>
+                            {# Link para a view de atualização/gerenciamento do usuário #}
+                            <a href="{% url 'gerenciar_usuario' user.pk %}"
+                                class="btn btn-sm btn-success">Gerenciar/Ativar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Nenhum usuário desativado encontrado.</p>
+            {% endif %}
+
+
+            <!-- https://www.youtube.com/watch?v=zTOWeyOu1dM&list=PLjv17QYEBJPpd6nI-MXpIa4qR7prKfPQz&index=22 -->
+            <!-- 
+                    https://www.youtube.com/watch?v=Q1yYqBUdGEg 
+                    Para redefinição de senha.
+
+                    
+                  -->
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

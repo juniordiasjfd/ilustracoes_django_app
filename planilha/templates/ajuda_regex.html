@@ -1,0 +1,125 @@
+{% load bootstrap4 %}
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geri | © Junior Dias</title>
+  {% bootstrap_css %}
+
+  <style>
+    code {
+        font-size: large;
+    }
+  </style>
+</head>
+
+<body>
+  {% include '_nav.html' %}
+  <div class="container mt-4">
+
+    <h1>Como fazer buscas com REGEX</h1>
+
+    <h2>Busca de palavras simples</h2>
+
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <th>Regex de exemplo</th>
+            <th>Descrição</th>
+            <th>O que ela retorna</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>produto</code></td>
+                <td>Busca pela sequência de letras "produto".</td>
+                <td>Encontraria "produto", "Produtos", "comprar produto", "subproduto".</td>
+            </tr>
+            <tr>
+                <td><code>vermelho</code></td>
+                <td>Busca por "vermelho".</td>
+                <td>Encontraria "vermelho", "VERMELHO", "Vermelha".</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>
+        Caracteres coringa
+    </h2>
+    
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Símbolo</th>
+                <th>Nome</th>
+                <th>Significado e uso</th>
+                <th>Exemplo de Regex</th>
+                <th>Descrições encontradas</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>.</code></td>
+                <td>Ponto</td>
+                <td>Representa <strong>qualquer caractere único</strong> (letra, número, espaço).</td>
+                <td><code>ca.a</code></td>
+                <td>"casa", "cama", "caca", "ca9a", "ca a"</td>
+            </tr>
+            <tr>
+                <td><code>*</code></td>
+                <td>Asterisco</td>
+                <td>O caractere anterior aparece <strong>zero ou mais vezes</strong>.</td>
+                <td><code>ab*c</code></td>
+                <td>"ac", "abc", "abbc", "abbbc"</td>
+            </tr>
+            <tr>
+                <td><code>+</code></td>
+                <td>Sinal de Mais</td>
+                <td>O caractere anterior aparece <strong>uma ou mais vezes</strong>.</td>
+                <td><code>ab+c</code></td>
+                <td>"abc", "abbc", "abbbc" (mas <strong>não</strong> "ac")</td>
+            </tr>
+            <tr>
+                <td><code>^</code></td>
+                <td>Circunflexo</td>
+                <td>Força a busca a <strong>começar no início</strong> da descrição.</td>
+                <td><code>^Livro</code></td>
+                <td>Encontraria descrições que começam com "Livro" ou "livro".</td>
+            </tr>
+            <tr>
+                <td><code>$</code></td>
+                <td>Cifrão</td>
+                <td>Força a busca a <strong>terminar no final</strong> da descrição.</td>
+                <td><code>fim$</code></td>
+                <td>Encontraria descrições que terminam com "fim" ou "FIM".</td>
+            </tr>
+            <tr>
+                <td><code>|</code></td>
+                <td>Barra Vertical</td>
+                <td><strong>OU lógico</strong> (alternativa).</td>
+                <td><code>gato|cachorro</code></td>
+                <td>Encontraria descrições com "gato" OU "cachorro".</td>
+            </tr>
+            <tr>
+                <td><code>[ ]</code></td>
+                <td>Colchetes</td>
+                <td>Busca por <strong>qualquer um</strong> dos caracteres listados dentro (ex: <code>[abc]</code>, <code>[0-9]</code>).</td>
+                <td><code>[0-9]</code></td>
+                <td>Encontraria qualquer descrição que contenha <strong>qualquer número</strong>.</td>
+            </tr>
+        </tbody>
+    </table>
+    		
+		
+		
+    
+
+  </div>
+
+  
+
+  {% bootstrap_javascript jquery='full' %}
+</body>
+
+</html>

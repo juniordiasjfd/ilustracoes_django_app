@@ -1,0 +1,27 @@
+/* 1. Aplica a fixação horizontal na primeira coluna (TH e TD) */
+.table-responsive table th:first-child,
+.table-responsive table td:first-child {
+    /* Habilita o posicionamento fixo/sticky */
+    position: sticky;
+    /* Cola a célula na posição esquerda 0 */
+    left: 0;
+    /* Z-index alto para a coluna fixa de dados */
+    z-index: 10; 
+}
+
+/* 2. Estilização específica para a célula de CABEÇALHO (O Canto) */
+.table-responsive table thead th:first-child {
+    /* A classe .sticky-top no thead já define top: 0. 
+       A célula precisa ter um z-index maior para "ganhar" 
+       do restante do cabeçalho ao rolar horizontalmente, 
+       criando o efeito de canto fixo.
+    */
+    background-color: #e9ecef; /* Cor do bg-light */
+    z-index: 11; /* Z-index maior que o restante da coluna (z-index: 10) */
+}
+
+/* 3. Estilização para as células de DADOS fixas */
+.table-responsive table tbody td:first-child {
+    /* O background é essencial para evitar transparência */
+    background-color: #fff; /* Fundo branco para dados */
+}

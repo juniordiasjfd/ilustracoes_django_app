@@ -1,0 +1,67 @@
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhe</title>
+    {% bootstrap_css %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    {% include '_nav.html' %}
+    <div class="container mt-4">
+        <h1>Editar crédito</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% bootstrap_form form %}
+
+            <button type="submit" class="btn btn-success">Salvar alterações</button>
+            <a href="{% url 'creditos' %}" class="btn btn-secondary">Cancelar</a>
+
+        </form>
+
+        <hr>
+
+        {% if object.ativo == True %}
+        <form action="{% url 'deletar_credito' object.pk %}" method="post" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger"
+                onclick="return confirm('ATENÇÃO: Você tem certeza que deseja EXCLUIR este crédito?');">
+                Desativar crédito
+            </button>
+        </form>
+        {% else %}
+        <form action="{% url 'reativar_credito' object.pk %}" method="post" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">
+                Reativar crédito
+            </button>
+        </form>
+        {% endif %}
+
+
+        <div class="auditoria-info mt-5">
+            <h2>Detalhes de auditoria</h2>
+            <p>
+                <strong>Criado por:</strong> {{ object.criado_por }}
+            </p>
+            <p>
+                <strong>Criado em:</strong> {{ object.criado_em|date:"d/m/Y H:i" }}
+            </p>
+            <p>
+                <strong>Atualizado por:</strong> {{ object.atualizado_por }}
+            </p>
+            <p>
+                <strong>Atualizado em:</strong> {{ object.modificado_em|date:"d/m/Y H:i" }}
+            </p>
+        </div>
+    </div>
+    {% bootstrap_javascript jquery='full' %}
+    {% include '_select2.html' %}
+</body>
+
+</html>

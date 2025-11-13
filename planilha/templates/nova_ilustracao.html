@@ -1,0 +1,59 @@
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="ept-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nova IL</title>
+    {% bootstrap_css %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+    <style>
+        .form-control::placeholder {
+            color: #c91d1d !important; /* lightcoral (vermelho claro) */
+            opacity: 1; /* Para Firefox */
+            /* background-color: #f08080; */
+        }
+        .form-control:-ms-input-placeholder { 
+            color: #c91d1d !important;
+            /* background-color: #f08080; */
+        }
+        .form-control::-ms-input-placeholder {
+            color: #c91d1d !important;
+            /* background-color: #f08080; */
+        }
+        .select2-selection__placeholder {
+            color: #c91d1d !important;
+            /* background-color: #f08080; */
+        }
+    </style>
+
+</head>
+
+<body>
+    {% include '_nav.html' %}
+    <div class="container mt-4">
+
+        <h1>Nova ilustração</h1>
+        {% bootstrap_messages %}
+        <form action="{% url 'nova_ilustracao' %}" method="post" class="form" autocomplete="off">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+            {% endbuttons %}
+
+        </form>
+
+    </div>
+
+    <div class="d-block" style="height: 300px;"></div>
+
+    {% bootstrap_javascript jquery='full' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    {% include '_select2.html' %}
+</body>
+
+</html>

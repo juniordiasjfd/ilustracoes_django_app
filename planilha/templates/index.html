@@ -1,0 +1,128 @@
+{% load bootstrap4 %}
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geri | © Junior Dias</title>
+  {% bootstrap_css %}
+</head>
+
+<body>
+  {% include '_nav.html' %}
+  <div class="container mt-4">
+    <img src="{% static 'planilha/images/logo.png' %}" class="mx-auto d-block" width="400"
+      style="max-width: 100%; height: auto; display: block;" alt="Gerenciador de imagens">
+
+  </div>
+
+  <div class="container">
+    <h1>Menu</h1>
+    <div class="row">
+      <!-- coluna -->
+      <div class="col">
+        <div class="card" style="width: 18rem;">
+          <a href="{% url 'ilustras' %}" class="card-link text-reset text-decoration-none">
+
+            <div class="card-body">
+              <h5 class="card-title">Ilustrações</h5>
+              <p class="card-text">Clique aqui para ir para a lista de ilustrações.</p>
+            </div>
+
+          </a>
+        </div>
+      </div>
+        <!-- coluna -->
+      <div class="col">
+        <div class="card" style="width: 18rem;">
+          <a href="{% url 'ilustradores' %}" class="card-link text-reset text-decoration-none">
+
+            <div class="card-body">
+              <h5 class="card-title">Ilustradores</h5>
+              <p class="card-text">Clique aqui para ir para a lista de ilustradores.</p>
+            </div>
+
+          </a>
+        </div>
+      </div>
+
+
+      <div class="w-100">
+        <p></p>
+      </div>
+      
+      
+      <!-- coluna -->
+        <div class="col">
+        <div class="card" style="width: 18rem;">
+          <a href="{% url 'projetos' %}" class="card-link text-reset text-decoration-none">
+
+            <div class="card-body">
+              <h5 class="card-title">Projetos</h5>
+              <p class="card-text">Clique aqui para ir para a lista de projetos.</p>
+            </div>
+
+          </a>
+        </div>
+      </div>
+      <!-- coluna -->
+      <div class="col">
+        <div class="card" style="width: 18rem;">
+          <a href="{% url 'creditos' %}" class="card-link text-reset text-decoration-none">
+  
+            <div class="card-body">
+              <h5 class="card-title">Créditos</h5>
+              <p class="card-text">Clique aqui para ir para a lista de créditos.</p>
+            </div>
+  
+          </a>
+        </div>
+      </div>
+
+
+      <div class="w-100">
+        <p></p>
+      </div>
+
+
+      <!-- coluna -->
+      <div class="col">
+        <div class="card" style="width: 18rem;">
+          <a href="{% url 'componentes' %}" class="card-link text-reset text-decoration-none">
+  
+            <div class="card-body">
+              <h5 class="card-title">Componentes</h5>
+              <p class="card-text">Clique aqui para ir para a lista de componentes.</p>
+            </div>
+  
+          </a>
+        </div>
+      </div>
+
+      <!-- coluna -->
+      <div class="col">
+        <div class="card" style="width: 18rem;">
+          <a href="{% url 'preenchimento_automatico' %}" class="card-link text-reset text-decoration-none">
+  
+            <div class="card-body">
+              <h5 class="card-title">Automatizar</h5>
+              <p class="card-text">Clique aqui para automatizar preeenchimento de campos.</p>
+            </div>
+  
+          </a>
+        </div>
+      </div>
+
+    </div>
+    
+
+
+
+  </div>
+
+  {% bootstrap_javascript jquery='full' %}
+</body>
+
+</html>

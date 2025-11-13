@@ -1,0 +1,116 @@
+{% load static %}
+{% load bootstrap4 %}
+{% load custom_filters %}
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ilustradores</title>
+    {% bootstrap_css %}
+</head>
+
+<body>
+    {% include '_nav.html' %}
+    <div class="container mt-4">
+
+        <h1>
+            {% if ativo %}
+                Ilustradores ativos
+            {% else %}
+                Ilustradores arquivados
+            {% endif %}
+        </h1>
+            <a href="{% url 'novo_ilustrador' %}" class="btn btn-outline-primary my-2 my-sm-0" role="button">
+            + ilustrador
+            </a>
+            {% if ativo %}
+                <a href="{% url 'ilustradores_arquivados' %}" class="btn btn-primary" role="button">
+                    Ir para ilustradores arquivados
+                </a>
+            {% else %}
+                <a href="{% url 'ilustradores' %}" class="btn btn-primary" role="button">
+                    Voltar para ilustradores ativos
+                </a>
+            {% endif %}
+
+        <p>Exibindo: {{ num_linhas }} linha(s)</p>
+        <button class="btn btn-success btn-sm"
+                        onclick="exportTableToCSV('tabela_de_ilustradores', 'ilustradores.csv')">
+                        Exportar para CSV
+                    </button>
+                    <button class="btn btn-success btn-sm"
+                        onclick="exportTable('tabela_de_ilustradores', 'xlsx', 'ilustradores');">
+                        Exportar para Excel
+                    </button>
+        <table class="table table-striped" id="tabela_de_ilustradores">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Sigla</th>
+                    <!-- <th>Crédito</th> -->
+                    <th>E-mail</th>
+                    <th>Criado em</th>
+                    <th>Modificado em</th>
+                    <th>Ativo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in artistas %}
+
+                <tr>
+                    <td>{{ object.nome }}</td>
+                    <td>{{ object.sigla }}</td>
+                    <!-- <td>{{ object.credito }}</td> -->
+                    <td>{{ object.email }}</td>
+                    <td>{{ object.criado_em|date:"d/m/y" }}</td>
+                    <td>{{ object.modificado_em|date:"d/m/y" }}</td>
+                    <td>{{ object.ativo|boolean_to_icon }}</td>
+                    <td class="text-nowrap">
+                        <a href="{% url 'detalhe_ilustrador' object.pk %}" class="btn btn-sm btn-info"
+                            title="Editar/Visualizar">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+
+                        {% if object.ativo == True %}
+                        <form action="{% url 'deletar_ilustrador' object.pk %}" method="post" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('ATENÇÃO: Você tem certeza que deseja DESATIVAR este ilustrador?');">
+                                Desativar
+                            </button>
+                        </form>
+                        {% else %}
+                        <form action="{% url 'reativar_ilustrador' object.pk %}" method="post" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">
+                                Reativar
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+    </div>
+
+    <div class="d-block" style="height: 300px;"></div>
+
+    
+    {% bootstrap_javascript jquery='full' %}
+
+    <!-- Scripts para exportação de dados em CSV e Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/js/tableexport.min.js"></script>
+    <script src="{% static 'planilha/js/scripts.js' %}"></script>
+</body>
+
+</html>

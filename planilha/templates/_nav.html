@@ -1,0 +1,98 @@
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">
+                            🏠
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ilustras' %}">Ilustrações</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ilustradores' %}">Ilustradores</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'creditos' %}">Créditos</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'componentes' %}">Componentes</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'projetos' %}">Projetos</a>
+                </li>
+
+            </ul>
+
+            <a href="{% url 'nova_ilustracao' %}" class="btn btn-outline-primary my-2 my-sm-0" role="button">
+                + ilustração
+            </a>
+            <a href="{% url 'novo_ilustrador' %}" class="btn btn-outline-primary my-2 my-sm-0" role="button">
+                + ilustrador
+            </a>
+            <a href="{% url 'novo_credito' %}" class="btn btn-outline-primary my-2 my-sm-0" role="button">
+                + crédito
+            </a>
+        </div>
+
+
+
+
+    </div>
+    <div class="d-flex align-items-center">
+        {% if user.is_authenticated %}
+
+        <span class="navbar-text mr-3">
+            Olá, **{{ user.username }}**!
+        </span>
+
+        <a href="{% url 'preenchimento_automatico' %}" 
+           class="btn btn-outline-secondary my-2 my-sm-0 mr-2" 
+           data-toggle="tooltip" 
+           title="Automatizar preenchimentos">
+            <i class="fas fa-gear"></i> <!-- Ícone de Engrenagem -->
+            Automatizar
+        </a>
+        <a href="{% url 'preferencias' %}" 
+           class="btn btn-outline-secondary my-2 my-sm-0 mr-2" 
+           data-toggle="tooltip" 
+           title="Configurações">
+            <i class="fas fa-gear"></i> <!-- Ícone de Engrenagem -->
+            Configurações
+        </a>
+        
+
+        <form method="post" action="{% url 'logout' %}" class="form-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger my-2 my-sm-0">Sair</button>
+        </form>
+
+        {% else %}
+
+        <a href="{% url 'registrar' %}" class="btn btn-success my-2 my-sm-0">
+            Registrar
+        </a>
+        
+        <a href="{% url 'login' %}" class="btn btn-success my-2 my-sm-0">
+            Login
+        </a>
+
+        {% endif %}
+    </div>
+</nav>

@@ -1,0 +1,223 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ilustrações</title>
+    {% bootstrap_css %}
+
+    <link rel="stylesheet" href="{% static 'planilha/css/estilos.css' %}">
+</head>
+
+<body>
+
+    {% include '_nav.html' %}
+
+
+    <div class="container-fluid mt-4">
+
+        <div class="row">
+            <div class="col-lg-3 col-md-4">
+
+            </div>
+            <div class="col-lg-9 col-md-8">
+                <h1>
+                    {% if ativo == True %}
+                    Ilustrações
+                    {% else %}
+                    Ilustrações excluídas
+                    {% endif %}
+                </h1>
+
+                <p>
+                    <a href="{% url 'nova_ilustracao' %}" class="btn btn-outline-primary my-2 my-sm-0" role="button">
+                        + ilustração
+                    </a>
+                    {% if ativo %}
+                    <a href="{% url 'ilustras_excluidas' %}" class="btn btn-primary" role="button">
+                        Ir para ilustrações excluídas
+                    </a>
+                    {% else %}
+                    <a href="{% url 'ilustras' %}" class="btn btn-primary" role="button">
+                        Voltar para ilustrações ativas
+                    </a>
+                    {% endif %}
+
+                    {% if ativo %}
+                    <a href="{% url 'ilustras' %}" class="btn btn-outline-secondary w-100" role="button">
+                        <i class="fas fa-times"></i> Limpar filtros
+                    </a>
+                    {% else %}
+                    <a href="{% url 'ilustras_excluidas' %}" class="btn btn-outline-secondary w-100" role="button">
+                        <i class="fas fa-times"></i> Limpar filtros
+                    </a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+
+
+
+        <div class="row">
+
+            <!-- COLUNA DO FILTRO (3/12 em telas grandes, 4/12 em telas médias) -->
+            <div class="col-lg-3 col-md-4">
+
+                <!-- Wrapper com position: sticky para fixar na tela durante a rolagem -->
+                <div class="sticky-filter-wrapper">
+                    <div class="card shadow-sm p-3 mb-4 bg-white rounded-lg">
+
+
+
+
+
+                        <h5 class="card-title text-xl font-bold mb-3">Filtrar ilustrações</h5>
+
+                        <div>
+                        Consulte <a href="{% url 'ajuda_regex' %}" target="_blank">aqui</a> um guia de como fazer buscas.
+                        <p></p>
+                        </div>
+
+
+
+                        <form method="get">
+                            {{ filter.form.as_p }}
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success w-100 mb-2">
+                                    <i class="fas fa-filter"></i> Aplicar Filtros
+                                </button>
+                                {% if ativo %}
+                                <a href="{% url 'ilustras' %}" class="btn btn-outline-secondary w-100" role="button">
+                                    <i class="fas fa-times"></i> Limpar filtros
+                                </a>
+                                {% else %}
+                                <a href="{% url 'ilustras_excluidas' %}" class="btn btn-outline-secondary w-100"
+                                    role="button">
+                                    <i class="fas fa-times"></i> Limpar filtros
+                                </a>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9 col-md-8">
+                {% if pre_filtro_ativo %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-filter me-2"></i> 
+                    <strong>Pré-Filtro Ativo:</strong> Esta listagem está filtrada automaticamente pelas suas preferências de projetos/componentes/volume.
+                    Você pode **modificar ou desativar** estas preferências na sua <a href="{% url 'preferencias' %}" class="alert-link">página de Preferências</a>.
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> -->
+                </div>
+                {% endif %}
+                <p>
+                    <span>Exibindo: {{ num_linhas }} linha(s)</span>
+
+                    <button class="btn btn-success btn-sm"
+                        onclick="exportTableToCSV('tabela_de_ilustracoes', 'ilustracoes.csv')">
+                        Exportar para CSV
+                    </button>
+                    <button class="btn btn-success btn-sm"
+                        onclick="exportTable('tabela_de_ilustracoes', 'xlsx', 'ilustracoes');">
+                        Exportar para Excel
+                    </button>
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle" id="tabela_de_ilustracoes">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th>Retranca</th>
+                                <th>Status</th>
+                                <th hidden>Categoria</th>
+                                <th hidden>Localização</th>
+                                <th>Volume</th>
+                                <th>Unidade</th>
+                                <th>Capítulo ou seção</th>
+                                <th>Página</th>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th hidden>Observação editorial e núcleo</th>
+                                <th>Lote</th>
+                                <th hidden>Data de liberação para arte</th>
+                                <th hidden>Data de envio do pedido</th>
+                                <th hidden>Data de recebimento do rafe</th>
+                                <th hidden>Data de retorno do rafe</th>
+                                <th hidden>Data de recebimento da finalizada</th>
+                                <th>Classificação</th>
+                                <th>Crédito</th>
+                                <th hidden>Ilustrador resgate</th>
+                                <th hidden>Ilustrador criação</th>
+                                <th hidden>Ilustrador ajuste</th>
+                                <th hidden>Observação da arte</th>
+                                <th>Pagamento</th>
+                                <th hidden>Modificada</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for il in filter.qs %}
+
+                            <tr>
+                                <td>{{ il.retranca }}</td>
+                                <td>{{ il.status }}</td>
+                                <td hidden>{{ il.categoria }}</td>
+                                <td hidden>{{ il.localizacao }}</td>
+                                <td>{{ il.volume }}</td>
+                                <td>{{ il.unidade }}</td>
+                                <td>{{ il.capitulo_secao }}</td>
+                                <td>{{ il.pagina }}</td>
+                                <td>{{ il.tipo }}</td>
+                                <td>{{ il.descricao }}</td>
+                                <td hidden>{{ il.observacao_edit_nuc }}</td>
+                                <td>{{ il.lote }}</td>
+                                <td hidden>{{ il.data_liberacao_para_arte | date:"d/m" }}</td>
+                                <td hidden>{{ il.data_envio_pedido | date:"d/m" }}</td>
+                                <td hidden>{{ il.data_recebimento_rafe | date:"d/m" }}</td>
+                                <td hidden>{{ il.data_recebimento_finalizada | date:"d/m" }}</td>
+                                <td hidden>{{ il.data_retorno_rafe | date:"d/m" }}</td>
+                                <td>{{ il.classificacao }}</td>
+                                <td>{{ il.credito }}</td>
+                                <td hidden>{{ il.ilustrador_resgate }}</td>
+                                <td hidden>{{ il.ilustrador }}</td>
+                                <td hidden>{{ il.ilustrador_ajuste }}</td>
+                                <td hidden>{{ il.observacao_arte }}</td>
+                                <td>{{ il.pagamento }}</td>
+                                <td hidden>{{ il.modificado_em | date:"d/m" }}</td>
+                                <td class="text-nowrap">
+                                    <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info"
+                                        title="Use Ctrl + Clique para abrir em nova janela">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <div class="d-block" style="height: 300px;"></div>
+
+
+        {% bootstrap_javascript jquery='full' %}
+
+        <!-- Scripts para exportação de dados em CSV e Excel -->
+        <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/js/tableexport.min.js"></script>
+        <script src="{% static 'planilha/js/scripts.js' %}"></script>
+
+</body>
+
+</html>

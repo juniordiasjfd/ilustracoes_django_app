@@ -1,0 +1,47 @@
+{% load static %}
+{% load bootstrap4 %}
+
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    {% block titulo %}
+        <title>Tírulo</title>
+    {% endblock %}
+
+    {% bootstrap_css %}
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    
+
+</head>
+
+<body>
+    {% include '_nav.html' %}
+    
+    
+    {% block conteudo %}
+        <div class="container mt-4">
+
+
+        </div>
+    {% endblock %}
+
+
+    <div class="d-block" style="height: 300px;"></div>
+    {% bootstrap_javascript jquery='full' %}
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    {% include '_select2.html' %}
+
+    
+</body>
+
+</html>

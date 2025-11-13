@@ -1,0 +1,26 @@
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Novo projeto</title>
+    {% bootstrap_css %}
+</head>
+
+<body>
+    {% include '_nav.html' %}
+    <div class="container mt-4">
+        {% bootstrap_messages %}
+        <form action="{% url 'novo_projeto' %}" method="post" class="form" autocomplete="off">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+            {% endbuttons %}
+        </form>
+    </div>
+    {% bootstrap_javascript jquery='full' %}
+</body>
+
+</html>
