@@ -63,6 +63,14 @@ class PreferenciasSalvar(LoginRequiredMixin, CreateView):
         # Vincula a preferência ao usuário logado antes de salvar
         form.instance.usuario = self.request.user
         return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Define a variável de contexto 'is_coordenador'
+        if self.request.user.is_authenticated:
+            context['is_coordenador'] = self.request.user.groups.filter(name='Coordenador').exists()
+        else:
+            context['is_coordenador'] = False
+        return context
 
 # 3. VIEW DE ATUALIZAÇÃO (Para todos os acessos seguintes)
 class PreferenciasAtualizar(LoginRequiredMixin, UpdateView):
