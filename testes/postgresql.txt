@@ -1,0 +1,7 @@
+senha master do postgresql
+scb3024@
+
+usuário menor do postgresql 
+    django_app_user
+senha
+    Scriba123
