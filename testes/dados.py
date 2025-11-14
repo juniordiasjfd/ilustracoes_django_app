@@ -10,7 +10,7 @@ django.setup()
 # 2. IMPORTAÇÕES DE MODELOS
 # ====================================================================
 import pandas
-from planilha.models import Ilustracao, Ilustrador
+from planilha.models import Ilustracao, Ilustrador, Credito, Projeto, Componente
 import datetime
 
 
