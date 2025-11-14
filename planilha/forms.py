@@ -87,7 +87,7 @@ class IlustracaoModelForm(forms.ModelForm):
         self.fields['ilustrador'].empty_label = "Selecione um ilustrador..." 
         self.fields['ilustrador_resgate'].empty_label = "Selecione um ilustrador..." 
         self.fields['ilustrador_ajuste'].empty_label = "Selecione um ilustrador..." 
-        self.fields['credito'].empty_label = "Selecione um ilustrador..." 
+        self.fields['credito'].empty_label = "Selecione um crédito..." 
         self.fields['projeto'].empty_label = "Selecione um projeto..." 
         self.fields['componente'].empty_label = "Selecione um componente..." 
 
@@ -99,7 +99,7 @@ class IlustracaoModelForm(forms.ModelForm):
         # Configuração Padrão: Filtra para mostrar apenas objetos ATIVOS
         self.fields['projeto'].queryset = Projeto.objects.filter(ativo=True)
         self.fields['componente'].queryset = Componente.objects.filter(ativo=True)
-        self.fields['credito'].queryset = Componente.objects.filter(ativo=True)
+        self.fields['credito'].queryset = Credito.objects.filter(ativo=True)
         self.fields['ilustrador'].queryset = Ilustrador.objects.filter(ativo=True)
         self.fields['ilustrador_ajuste'].queryset = Ilustrador.objects.filter(ativo=True)
 
@@ -142,13 +142,19 @@ class IlustracaoModelForm(forms.ModelForm):
                 if componentes_favoritos.exists():
                     self.fields['componente'].queryset = componentes_favoritos.filter(ativo=True).order_by('nome')
                 # --- Filtro de Crédito (Dependente do Projeto) ---
-                if projetos_favoritos.exists():
-                    # Filtra Créditos que estão associados (via M2M 'projetos') a qualquer um dos projetos favoritos.
-                    self.fields['credito'].queryset = Credito.objects.filter(
-                        ativo=True,
-                        projetos__in=projetos_favoritos,
-                        componentes__in=componentes_favoritos
-                    ).distinct().order_by('nome')
+                if projetos_favoritos.exists() or componentes_favoritos.exists():
+                    creditos_queryset = Credito.objects.filter(ativo=True)
+                    if projetos_favoritos.exists():
+                        creditos_queryset = creditos_queryset.filter(projetos__in=projetos_favoritos)
+                    if componentes_favoritos.exists():
+                        creditos_queryset = creditos_queryset.filter(componentes__in=componentes_favoritos)
+                    self.fields['credito'].queryset = creditos_queryset.distinct().order_by('nome')
+                    # # Filtra Créditos que estão associados (via M2M 'projetos') a qualquer um dos projetos favoritos.
+                    # self.fields['credito'].queryset = Credito.objects.filter(
+                    #     ativo=True,
+                    #     projetos__in=projetos_favoritos,
+                    #     # componentes__in=componentes_favoritos
+                    # ).distinct().order_by('nome')
             except PreferenciasPreFiltro.DoesNotExist:
                 # Se não houver objeto de preferências, mantém os querysets iniciais (Todos Ativos).
                 pass 
