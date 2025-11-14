@@ -32,6 +32,7 @@ def ilustras(request):
         projeto__ativo=True,
         componente__ativo=True,
         )
+    num_linhas_total = queryset_base.count()
     # 2. Lógica do Pré-Filtro
     pre_filtro_ativo = False
     try:
@@ -70,6 +71,7 @@ def ilustras(request):
         'ativo': True,
         'filter': filter,
         'num_linhas': num_linhas,
+        'num_linhas_total': num_linhas_total,
         'pre_filtro_ativo': pre_filtro_ativo,
     }
     return render(request, 'ilustras.html', context)
