@@ -25,8 +25,10 @@ class UsuarioListarTodosView(GroupRequiredMixin, TemplateView):
     template_name = 'usuario/usuario_gerenciamento_todos.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['usuarios_ativos'] = User.objects.filter(is_active=True)
-        context['usuarios_desativados'] = User.objects.filter(is_active=False)
+        # Exclui usuários que pertencem ao grupo "Administrador"
+        usuarios_base = User.objects.all().exclude(groups__name='Administrador')
+        context['usuarios_ativos'] = usuarios_base.filter(is_active=True)
+        context['usuarios_desativados'] = usuarios_base.filter(is_active=False)
         return context
 
 # 1. VIEW ROUTER (A View principal que decide para onde redirecionar)
