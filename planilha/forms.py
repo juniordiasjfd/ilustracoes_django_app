@@ -2,6 +2,7 @@ from django import forms
 from .models import Projeto, Ilustracao, Componente, Ilustrador, Credito
 from usuario.models import PreenchimentoAutomaticoDeCampos
 from usuario.models import PreferenciasPreFiltro
+from django.db.models import Q
 
 
 class IlustracaoModelForm(forms.ModelForm):
@@ -161,34 +162,57 @@ class IlustracaoModelForm(forms.ModelForm):
             
         # TRATAMENTO DE EXCEÇÃO PARA EDIÇÃO (Garante que itens inativos sejam visíveis)
         if self.instance and self.instance.pk:
-            # --- Projeto ---
-            projeto_atual = self.instance.projeto
-            # Se o projeto atual NÃO estiver ativo, force sua inclusão no queryset
-            if projeto_atual and not projeto_atual.ativo:
-                self.fields['projeto'].queryset |= Projeto.objects.filter(pk=projeto_atual.pk)
-            # Garante que o projeto atual esteja no queryset (útil se o projeto não estiver na lista de favoritos)
-            elif projeto_atual:
-                self.fields['projeto'].queryset |= Projeto.objects.filter(pk=projeto_atual.pk)
-            # --- Componente ---
-            componente_atual = self.instance.componente
-            if componente_atual and not componente_atual.ativo:
-                self.fields['componente'].queryset |= Componente.objects.filter(pk=componente_atual.pk)
-            elif componente_atual:
-                self.fields['componente'].queryset |= Componente.objects.filter(pk=componente_atual.pk)
-            # --- Crédito ---
+    
+            # ----------------------------------------------------
+            # --- Crédito (Utiliza Q object para garantir que o item atual seja sempre visível) ---
+            # ----------------------------------------------------
             credito_atual = self.instance.credito
-            if credito_atual and not credito_atual.ativo:
-                self.fields['credito'].queryset |= Credito.objects.filter(pk=credito_atual.pk)
-            elif credito_atual:
-                self.fields['credito'].queryset |= Credito.objects.filter(pk=credito_atual.pk)
+            if credito_atual:
+                # Pega o QuerySet atual (pode ser o filtrado por favoritos e ativo=True, e talvez único)
+                qs_base = self.fields['credito'].queryset
+                
+                # Cria uma condição OR: (todos os IDs no qs_base) OU (o ID do crédito atual)
+                # Isso garante que o crédito atual esteja na lista, mesmo se for inativo OU não favorito.
+                condicao_or = Q(pk__in=qs_base.values_list('pk', flat=True)) | Q(pk=credito_atual.pk)
+                
+                # Reverte para um QuerySet compatível aplicando o filtro OR e garantindo que seja distinto
+                self.fields['credito'].queryset = Credito.objects.filter(condicao_or).distinct()
+            
+            # ----------------------------------------------------
+            # --- Projeto (Reaplicando a correção aqui também para evitar o mesmo erro) ---
+            # ----------------------------------------------------
+            projeto_atual = self.instance.projeto
+            if projeto_atual:
+                qs_base = self.fields['projeto'].queryset
+                condicao_or = Q(pk__in=qs_base.values_list('pk', flat=True)) | Q(pk=projeto_atual.pk)
+                self.fields['projeto'].queryset = Projeto.objects.filter(condicao_or).distinct()
+
+            # ----------------------------------------------------
+            # --- Componente (Reaplicando a correção aqui também para evitar o mesmo erro) ---
+            # ----------------------------------------------------
+            componente_atual = self.instance.componente
+            if componente_atual:
+                qs_base = self.fields['componente'].queryset
+                condicao_or = Q(pk__in=qs_base.values_list('pk', flat=True)) | Q(pk=componente_atual.pk)
+                self.fields['componente'].queryset = Componente.objects.filter(condicao_or).distinct()
+
+            # ----------------------------------------------------
             # --- Ilustrador (Criação) ---
+            # ----------------------------------------------------
             ilustrador_criacao_atual = self.instance.ilustrador
-            if ilustrador_criacao_atual and not ilustrador_criacao_atual.ativo:
-                self.fields['ilustrador'].queryset |= Ilustrador.objects.filter(pk=ilustrador_criacao_atual.pk)
+            if ilustrador_criacao_atual:
+                qs_base = self.fields['ilustrador'].queryset
+                condicao_or = Q(pk__in=qs_base.values_list('pk', flat=True)) | Q(pk=ilustrador_criacao_atual.pk)
+                self.fields['ilustrador'].queryset = Ilustrador.objects.filter(condicao_or).distinct()
+                
+            # ----------------------------------------------------
             # --- Ilustrador (Ajuste) ---
+            # ----------------------------------------------------
             ilustrador_ajuste_atual = self.instance.ilustrador_ajuste
-            if ilustrador_ajuste_atual and not ilustrador_ajuste_atual.ativo:
-                self.fields['ilustrador_ajuste'].queryset |= Ilustrador.objects.filter(pk=ilustrador_ajuste_atual.pk)
+            if ilustrador_ajuste_atual:
+                qs_base = self.fields['ilustrador_ajuste'].queryset
+                condicao_or = Q(pk__in=qs_base.values_list('pk', flat=True)) | Q(pk=ilustrador_ajuste_atual.pk)
+                self.fields['ilustrador_ajuste'].queryset = Ilustrador.objects.filter(condicao_or).distinct()
 
         # ----------------------------------------------------
         # Preenchimento Automático (Apenas para CRIAÇÃO)
