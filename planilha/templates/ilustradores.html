@@ -68,8 +68,8 @@
                     <!-- <td>{{ object.credito }}</td> -->
                     <td>{{ object.email }}</td>
                     <td>{{ object.telefone }}</td>
-                    <td>{{ object.criado_em|date:"d/m/y" }}</td>
-                    <td>{{ object.modificado_em|date:"d/m/y" }}</td>
+                    <td>{{ object.criado_em|date:"d/m/Y" }}</td>
+                    <td>{{ object.modificado_em|date:"d/m/Y" }}</td>
                     <td>{{ object.ativo|boolean_to_icon }}</td>
                     <td class="text-nowrap">
                         <a href="{% url 'detalhe_ilustrador' object.pk %}" class="btn btn-sm btn-info"

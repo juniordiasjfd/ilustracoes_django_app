@@ -7,11 +7,16 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.db.models import Q
+import pandas
+import datetime
+from django.db import transaction
+
 
 from .models import Projeto, Componente, Ilustracao, Ilustrador, Credito
-from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm
+from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm, UploadExcelForm
 from .filter import IlustracaoFilter
 from usuario.models import PreferenciasPreFiltro
+from django.views.generic.edit import FormView
 
 
 def is_coordenador(user):
@@ -404,3 +409,178 @@ def creditos_arquivados(request):
 
 def ajuda_regex(request):
     return render(request, 'ajuda_regex.html')
+
+
+class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
+    template_name = 'upload_ilustracoes.html'
+    form_class = UploadExcelForm
+    success_url = reverse_lazy('ilustras')
+
+    def form_valid(self, form):
+        """
+        Este método é chamado quando o formulário é submetido e validado.
+        Aqui processamos o arquivo Excel e atualizamos o banco de dados.
+        """
+        request = self.request
+        excel_file = request.FILES['arquivo_excel']
+        try:
+            # 1. Leitura do arquivo
+            # Lê a primeira aba, assumindo que o cabeçalho está na primeira linha (index 0)
+            df = pandas.read_excel(excel_file, header=0)
+            
+            # 2. Mapeamento de Colunas e Preparações
+            df.rename(columns={
+                'Retranca': 'retranca', 
+                'Status': 'status', 
+                'Pagamento': 'pagamento',
+                'Lote': 'lote',
+                'Data de liberação para arte': 'data_liberacao_para_arte',
+                'Data de envio do pedido': 'data_envio_pedido',
+                'Data de recebimento do rafe': 'data_recebimento_rafe',
+                'Data de retorno do rafe': 'data_retorno_rafe',
+                'Data de recebimento da finalizada': 'data_recebimento_finalizada',
+            }, inplace=True)
+            
+            # Obtém as retrancas do Excel para buscar os objetos no DB
+            # retrancas_do_excel = df['retranca'].dropna().astype(str).str.strip().tolist()
+            pks_do_excel = df['pk'].dropna().tolist()
+            # Busca todos os objetos em uma única consulta (in_bulk cria um dict {pk: objeto})
+            ilustracoes_db = Ilustracao.objects.filter(pk__in=pks_do_excel).in_bulk(field_name='pk')
+            
+            ilustracoes_para_atualizar = []
+            lista_de_campos_a_atualizar = []
+            
+            # 3. Itera e Prepara a Atualização
+            for index, row in df.iterrows():
+                # break
+                pk = row.get('pk', '')
+                
+                if pk and pk in ilustracoes_db:
+                    il: Ilustracao = ilustracoes_db[pk]
+                    
+                    # --- Processa e valida o novo STATUS ---
+                    novo_status_label = str(row.get('status', '')).strip()
+                    # Garante que o valor do Excel seja um valor válido do StatusChoices
+                    # O .values contém os valores internos (e.g., 'EDICAO_EQUIPE')
+                    if novo_status_label in Ilustracao.StatusChoices.values:
+                        if il.status != novo_status_label:
+                            il.status = novo_status_label
+                            if il not in ilustracoes_para_atualizar: 
+                                ilustracoes_para_atualizar.append(il)
+                                lista_de_campos_a_atualizar.append('status')
+
+                    # --- Processa e valida o novo PAGAMENTO ---
+                    novo_pagamento_label = str(row.get('pagamento_excel', '')).strip()
+                    # Garante que o valor do Excel seja um valor válido do PagamentoChoices
+                    if novo_pagamento_label in Ilustracao.PagamentoChoices.values:
+                        if il.pagamento != novo_pagamento_label:
+                            il.pagamento = novo_pagamento_label
+                            if il not in ilustracoes_para_atualizar: 
+                                ilustracoes_para_atualizar.append(il)
+                                lista_de_campos_a_atualizar.append('pagamento')
+                    
+                    # -- Processa e valida o LOTE ---
+                    novo_lote_label = str(row.get('lote','')).strip()
+                    try:
+                        novo_lote_label = int(novo_lote_label)
+                        if novo_lote_label >= 0:
+                            if il.lote != novo_lote_label:
+                                il.lote = novo_lote_label
+                                if il not in ilustracoes_para_atualizar:
+                                    ilustracoes_para_atualizar.append(il)
+                                    lista_de_campos_a_atualizar.append('lote')
+                    except: pass
+
+                    # --- Processa e valida a data -- 
+                    nova_data_liberacao_para_arte_label = row.get('data_liberacao_para_arte','')
+                    processar = False
+                    if type(nova_data_liberacao_para_arte_label) == str and '/' in nova_data_liberacao_para_arte_label:
+                        nova_data_liberacao_para_arte_label = datetime.datetime.strptime(nova_data_liberacao_para_arte_label, '%d/%m/%Y')
+                        processar = True
+                    elif type(nova_data_liberacao_para_arte_label) == pandas.Timestamp:
+                        processar = True
+                        nova_data_liberacao_para_arte_label = nova_data_liberacao_para_arte_label.to_pydatetime()
+                    if processar:
+                        if il.data_liberacao_para_arte != nova_data_liberacao_para_arte_label:
+                            il.data_liberacao_para_arte = nova_data_liberacao_para_arte_label
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                lista_de_campos_a_atualizar.append('data_liberacao_para_arte')
+                    
+                    nova_data_envio_pedido_label = row.get('data_envio_pedido','')
+                    if type(nova_data_envio_pedido_label) == str and '/' in nova_data_envio_pedido_label:
+                        nova_data_envio_pedido_label = datetime.datetime.strptime(nova_data_envio_pedido_label, '%d/%m/%Y')
+                        processar = True
+                    elif type(nova_data_envio_pedido_label) == pandas.Timestamp:
+                        processar = True
+                        nova_data_envio_pedido_label = nova_data_envio_pedido_label.to_pydatetime()
+                    if processar:
+                        if il.data_envio_pedido != nova_data_envio_pedido_label:
+                            il.data_envio_pedido = nova_data_envio_pedido_label
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                lista_de_campos_a_atualizar.append('data_envio_pedido')
+                    
+                    nova_data_recebimento_rafe_label = row.get('data_recebimento_rafe','')
+                    if type(nova_data_recebimento_rafe_label) == str and '/' in nova_data_recebimento_rafe_label:
+                        nova_data_recebimento_rafe_label = datetime.datetime.strptime(nova_data_recebimento_rafe_label, '%d/%m/%Y')
+                        processar = True
+                    elif type(nova_data_recebimento_rafe_label) == pandas.Timestamp:
+                        processar = True
+                        nova_data_recebimento_rafe_label = nova_data_recebimento_rafe_label.to_pydatetime()
+                    if processar:
+                        if il.data_recebimento_rafe != nova_data_recebimento_rafe_label:
+                            il.data_recebimento_rafe = nova_data_recebimento_rafe_label
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                lista_de_campos_a_atualizar.append('data_recebimento_rafe')
+                    
+                    nova_data_retorno_rafe_label = row.get('data_retorno_rafe','')
+                    if type(nova_data_retorno_rafe_label) == str and '/' in nova_data_retorno_rafe_label:
+                        nova_data_retorno_rafe_label = datetime.datetime.strptime(nova_data_retorno_rafe_label, '%d/%m/%Y')
+                        processar = True
+                    elif type(nova_data_retorno_rafe_label) == pandas.Timestamp:
+                        processar = True
+                        nova_data_retorno_rafe_label = nova_data_retorno_rafe_label.to_pydatetime()
+                    if processar:
+                        if il.data_retorno_rafe != nova_data_retorno_rafe_label:
+                            il.data_retorno_rafe = nova_data_retorno_rafe_label
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                lista_de_campos_a_atualizar.append('data_retorno_rafe')
+                    
+                    nova_data_recebimento_finalizada_label = row.get('data_recebimento_finalizada','')
+                    if type(nova_data_recebimento_finalizada_label) == str and '/' in nova_data_recebimento_finalizada_label:
+                        nova_data_recebimento_finalizada_label = datetime.datetime.strptime(nova_data_recebimento_finalizada_label, '%d/%m/%Y')
+                        processar = True
+                    elif type(nova_data_recebimento_finalizada_label) == pandas.Timestamp:
+                        processar = True
+                        nova_data_recebimento_finalizada_label = nova_data_recebimento_finalizada_label.to_pydatetime()
+                    if processar:
+                        if il.data_recebimento_finalizada != nova_data_recebimento_finalizada_label:
+                            il.data_recebimento_finalizada = nova_data_recebimento_finalizada_label
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                lista_de_campos_a_atualizar.append('data_recebimento_finalizada')
+
+            # 4. Executa a Atualização em Massa
+            if ilustracoes_para_atualizar:
+                with transaction.atomic():
+                    # Utiliza bulk_update para fazer a atualização em massa eficiente
+                    Ilustracao.objects.bulk_update(
+                        ilustracoes_para_atualizar, 
+                        lista_de_campos_a_atualizar
+                    )
+                messages.success(request, f'{len(ilustracoes_para_atualizar)} ilustrações atualizadas com sucesso via Excel!')
+            else:
+                messages.info(request, 'Nenhuma alteração detectada nas ilustrações fornecidas.')
+
+            # Chama o método pai (que lida com o redirecionamento para success_url)
+            return super().form_valid(form)
+            
+        except Exception as e:
+            # Trata erros de leitura de arquivo ou problemas na lógica
+            messages.error(request, f'Erro ao processar o arquivo: {e}')
+            print(f"Erro de processamento do Excel: {e}")
+            # Se houver erro, retorna ao formulário com o contexto do erro
+            return self.form_invalid(form)

@@ -1,0 +1,84 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ilustrações</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'planilha/images/ico.png' %}">
+    {% bootstrap_css %}
+
+    <link rel="stylesheet" href="{% static 'planilha/css/estilos.css' %}">
+</head>
+
+<body>
+
+    {% include '_nav.html' %}
+
+<div class="container mt-4">
+    <h1>Importar atualizações do Excel</h1>
+    <p>
+        <a href="{% url 'ilustras' %}" class="btn btn-secondary">Voltar</a>
+    </p>
+    <p>É possível atualizar, em lote, os seguintes campos:</p>
+    <ul>
+        <li>Status
+            <ul>
+                <li>EDICAO_EQUIPE</li>
+                <li>EDICAO_ARTE</li>
+                <li>ILUSTRANDO</li>
+                <li>AVALIANDO</li>
+                <li>AJUSTANDO</li>
+                <li>FINALIZANDO</li>
+                <li>PRONTA</li>
+                <li>APLICADA</li>
+                <li>EXCLUÍDA</li>
+            </ul>
+        </li>
+        <li>
+            Pagamento
+            <ul>
+                <li>AVALIAR</li>
+                <li>PREVISÃO</li>
+                <li>FINALIZADO</li>
+                <li>FINALIZADO RAFE</li>
+                <li>PAGO</li>
+                <li>PAGO RAFE</li>
+                <li>SEM PAGAMENTO</li>
+            </ul>
+        </li>
+        <li>Lote: número inteiro</li>
+        <li>Data de liberação para arte</li>
+        <li>Data de envio do pedido</li>
+        <li>Data de recebimento do rafe</li>
+        <li>Data de retorno do rafe</li>
+        <li>Data de recebimento da finalizada</li>
+    </ul>
+
+    <div class="card p-4 shadow-sm">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-primary mt-3">
+                <i class="fas fa-upload"></i> Enviar e Atualizar
+            </button>
+        </form>
+    </div>
+</div>
+
+
+<div class="d-block" style="height: 300px;"></div>
+
+
+        {% bootstrap_javascript jquery='full' %}
+
+        <!-- Scripts para exportação de dados em CSV e Excel -->
+        <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/js/tableexport.min.js"></script>
+        <script src="{% static 'planilha/js/scripts.js' %}"></script>
+
+</body>
+
+</html>

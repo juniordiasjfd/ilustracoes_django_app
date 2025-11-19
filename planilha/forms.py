@@ -293,3 +293,10 @@ class ProjetoModelForm(forms.ModelForm):
     class Meta:
         model = Projeto
         fields = ['nome', 'editora', 'ciclo']
+
+class UploadExcelForm(forms.Form):
+    arquivo_excel = forms.FileField(
+        label='Arquivo Excel (XLSX)',
+        help_text='Use a planilha exportada e altere apenas as colunas desejadas. Mantenha a coluna pk.',
+        widget=forms.ClearableFileInput(attrs={'accept': '.xlsx'})
+    )

@@ -24,6 +24,16 @@
 
             </div>
             <div class="col-lg-9 col-md-8">
+                <div class="container-fluid mt-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message|safe }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">X</button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
                 <h1>
                     {% if ativo == True %}
                     Ilustrações
@@ -126,6 +136,10 @@
                         onclick="exportTable('tabela_de_ilustracoes', 'xlsx', 'ilustracoes');">
                         Exportar para Excel
                     </button>
+
+                    <a href="{% url 'upload_ilustracoes_excel' %}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-file-upload"></i> Importar atualizações do Excel
+                    </a>
                 </p>
 
                 <div class="table-responsive">
@@ -133,6 +147,7 @@
                         <thead class="bg-light sticky-top">
                             <tr>
                                 <th>Retranca</th>
+                                <th hidden>pk</th>
                                 <th>Status</th>
                                 <th hidden>Categoria</th>
                                 <th hidden>Localização</th>
@@ -165,6 +180,7 @@
 
                             <tr>
                                 <td>{{ il.retranca }}</td>
+                                <td hidden>{{ il.pk }}</td>
                                 <td>{{ il.status }}</td>
                                 <td hidden>{{ il.categoria }}</td>
                                 <td hidden>{{ il.localizacao }}</td>
@@ -176,11 +192,11 @@
                                 <td>{{ il.descricao }}</td>
                                 <td hidden>{{ il.observacao_edit_nuc }}</td>
                                 <td>{{ il.lote }}</td>
-                                <td hidden>{{ il.data_liberacao_para_arte | date:"d/m" }}</td>
-                                <td hidden>{{ il.data_envio_pedido | date:"d/m" }}</td>
-                                <td hidden>{{ il.data_recebimento_rafe | date:"d/m" }}</td>
-                                <td hidden>{{ il.data_recebimento_finalizada | date:"d/m" }}</td>
-                                <td hidden>{{ il.data_retorno_rafe | date:"d/m" }}</td>
+                                <td hidden>{{ il.data_liberacao_para_arte | date:"d/m/Y" }}</td>
+                                <td hidden>{{ il.data_envio_pedido | date:"d/m/Y" }}</td>
+                                <td hidden>{{ il.data_recebimento_rafe | date:"d/m/Y" }}</td>
+                                <td hidden>{{ il.data_recebimento_finalizada | date:"d/m/Y" }}</td>
+                                <td hidden>{{ il.data_retorno_rafe | date:"d/m/Y" }}</td>
                                 <td>{{ il.classificacao }}</td>
                                 <td>{{ il.credito }}</td>
                                 <td hidden>{{ il.ilustrador_resgate }}</td>
@@ -188,7 +204,7 @@
                                 <td hidden>{{ il.ilustrador_ajuste }}</td>
                                 <td hidden>{{ il.observacao_arte }}</td>
                                 <td>{{ il.pagamento }}</td>
-                                <td hidden>{{ il.modificado_em | date:"d/m" }}</td>
+                                <td hidden>{{ il.modificado_em | date:"d/m/Y" }}</td>
                                 <td class="text-nowrap">
                                     <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info"
                                         title="Use Ctrl + Clique para abrir em nova janela">
@@ -218,6 +234,7 @@
         <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/js/tableexport.min.js"></script>
         <script src="{% static 'planilha/js/scripts.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

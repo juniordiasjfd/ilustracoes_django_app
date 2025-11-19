@@ -65,8 +65,8 @@
                     <td>{{ object.nome }}</td>
                     <td>{{ object.projetos.all | join:"; " }}</td>
                     <td>{{ object.componentes.all | join:"; " }}</td>
-                    <td>{{ object.criado_em|date:"d/m/y" }}</td>
-                    <td>{{ object.modificado_em|date:"d/m/y" }}</td>
+                    <td>{{ object.criado_em|date:"d/m/Y" }}</td>
+                    <td>{{ object.modificado_em|date:"d/m/Y" }}</td>
                     <td>{{ object.ativo|boolean_to_icon }}</td>
                     <td class="text-nowrap">
                         <a href="{% url 'detalhe_credito' object.pk %}" class="btn btn-sm btn-info"
