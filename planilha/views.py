@@ -493,7 +493,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                     # -- Processa e valida o LOTE ---
                     processar = False
                     novo_lote_label = str(row.get('lote','')).strip()
-                    print('novo_lote_label',novo_lote_label, il)
+                    # print('novo_lote_label',novo_lote_label, il)
                     if novo_lote_label == 'nan':
                         novo_lote_label = None
                     try:
@@ -573,7 +573,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                     
                     processar = False
                     nova_data_recebimento_finalizada_label = row.get('data_recebimento_finalizada','')
-                    print(nova_data_recebimento_finalizada_label)
+                    # print(nova_data_recebimento_finalizada_label)
                     if type(nova_data_recebimento_finalizada_label) == str and '/' in nova_data_recebimento_finalizada_label:
                         nova_data_recebimento_finalizada_label = datetime.datetime.strptime(nova_data_recebimento_finalizada_label, '%d/%m/%Y')
                         processar = True
