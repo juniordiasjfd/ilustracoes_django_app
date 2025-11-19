@@ -9,6 +9,7 @@ from braces.views import GroupRequiredMixin
 from django.db.models import Q
 import pandas
 import datetime
+from django.utils import timezone
 from django.db import transaction
 
 
@@ -18,6 +19,12 @@ from .filter import IlustracaoFilter
 from usuario.models import PreferenciasPreFiltro
 from django.views.generic.edit import FormView
 
+
+def to_data_aware(date_naive):
+    # 1. Crie o datetime naive
+    # data_naive = datetime.datetime(2025, 11, 18, 0, 0, 0)
+    # 2. Torne-o aware, usando o fuso horário configurado em settings.py (TIME_ZONE)
+    return timezone.make_aware(date_naive)
 
 def is_coordenador(user):
     return user.groups.filter(name='Coordenador').exists()
@@ -426,6 +433,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
         try:
             # 1. Leitura do arquivo
             # Lê a primeira aba, assumindo que o cabeçalho está na primeira linha (index 0)
+            # excel_file = r'C:\Users\junior.dias\Downloads\ilustracoes (1).xlsx'
             df = pandas.read_excel(excel_file, header=0)
             
             # 2. Mapeamento de Colunas e Preparações
@@ -451,8 +459,11 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
             lista_de_campos_a_atualizar = []
             
             # 3. Itera e Prepara a Atualização
+            '''
             for index, row in df.iterrows():
-                # break
+                break
+            '''
+            for index, row in df.iterrows():
                 pk = row.get('pk', '')
                 
                 if pk and pk in ilustracoes_db:
@@ -465,35 +476,43 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                     if novo_status_label in Ilustracao.StatusChoices.values:
                         if il.status != novo_status_label:
                             il.status = novo_status_label
+                            lista_de_campos_a_atualizar.append('status')
                             if il not in ilustracoes_para_atualizar: 
                                 ilustracoes_para_atualizar.append(il)
-                                lista_de_campos_a_atualizar.append('status')
 
                     # --- Processa e valida o novo PAGAMENTO ---
-                    novo_pagamento_label = str(row.get('pagamento_excel', '')).strip()
+                    novo_pagamento_label = str(row.get('pagamento', '')).strip()
                     # Garante que o valor do Excel seja um valor válido do PagamentoChoices
                     if novo_pagamento_label in Ilustracao.PagamentoChoices.values:
                         if il.pagamento != novo_pagamento_label:
                             il.pagamento = novo_pagamento_label
+                            lista_de_campos_a_atualizar.append('pagamento')
                             if il not in ilustracoes_para_atualizar: 
                                 ilustracoes_para_atualizar.append(il)
-                                lista_de_campos_a_atualizar.append('pagamento')
                     
                     # -- Processa e valida o LOTE ---
+                    processar = False
                     novo_lote_label = str(row.get('lote','')).strip()
+                    print('novo_lote_label',novo_lote_label, il)
+                    if novo_lote_label == 'nan':
+                        novo_lote_label = None
                     try:
-                        novo_lote_label = int(novo_lote_label)
-                        if novo_lote_label >= 0:
+                        novo_lote_label = (None if novo_lote_label == None else int(float(novo_lote_label)))
+                        if novo_lote_label == None:
+                            processar = True
+                        elif novo_lote_label >= 0:
+                            processar = True
+                        if processar:
                             if il.lote != novo_lote_label:
                                 il.lote = novo_lote_label
+                                lista_de_campos_a_atualizar.append('lote')
                                 if il not in ilustracoes_para_atualizar:
                                     ilustracoes_para_atualizar.append(il)
-                                    lista_de_campos_a_atualizar.append('lote')
                     except: pass
 
                     # --- Processa e valida a data -- 
-                    nova_data_liberacao_para_arte_label = row.get('data_liberacao_para_arte','')
                     processar = False
+                    nova_data_liberacao_para_arte_label = row.get('data_liberacao_para_arte','')
                     if type(nova_data_liberacao_para_arte_label) == str and '/' in nova_data_liberacao_para_arte_label:
                         nova_data_liberacao_para_arte_label = datetime.datetime.strptime(nova_data_liberacao_para_arte_label, '%d/%m/%Y')
                         processar = True
@@ -502,11 +521,12 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                         nova_data_liberacao_para_arte_label = nova_data_liberacao_para_arte_label.to_pydatetime()
                     if processar:
                         if il.data_liberacao_para_arte != nova_data_liberacao_para_arte_label:
-                            il.data_liberacao_para_arte = nova_data_liberacao_para_arte_label
+                            il.data_liberacao_para_arte = to_data_aware(nova_data_liberacao_para_arte_label)
+                            lista_de_campos_a_atualizar.append('data_liberacao_para_arte')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
-                                lista_de_campos_a_atualizar.append('data_liberacao_para_arte')
                     
+                    processar = False
                     nova_data_envio_pedido_label = row.get('data_envio_pedido','')
                     if type(nova_data_envio_pedido_label) == str and '/' in nova_data_envio_pedido_label:
                         nova_data_envio_pedido_label = datetime.datetime.strptime(nova_data_envio_pedido_label, '%d/%m/%Y')
@@ -516,11 +536,12 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                         nova_data_envio_pedido_label = nova_data_envio_pedido_label.to_pydatetime()
                     if processar:
                         if il.data_envio_pedido != nova_data_envio_pedido_label:
-                            il.data_envio_pedido = nova_data_envio_pedido_label
+                            il.data_envio_pedido = to_data_aware(nova_data_envio_pedido_label)
+                            lista_de_campos_a_atualizar.append('data_envio_pedido')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
-                                lista_de_campos_a_atualizar.append('data_envio_pedido')
                     
+                    processar = False
                     nova_data_recebimento_rafe_label = row.get('data_recebimento_rafe','')
                     if type(nova_data_recebimento_rafe_label) == str and '/' in nova_data_recebimento_rafe_label:
                         nova_data_recebimento_rafe_label = datetime.datetime.strptime(nova_data_recebimento_rafe_label, '%d/%m/%Y')
@@ -530,11 +551,12 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                         nova_data_recebimento_rafe_label = nova_data_recebimento_rafe_label.to_pydatetime()
                     if processar:
                         if il.data_recebimento_rafe != nova_data_recebimento_rafe_label:
-                            il.data_recebimento_rafe = nova_data_recebimento_rafe_label
+                            il.data_recebimento_rafe = to_data_aware(nova_data_recebimento_rafe_label)
+                            lista_de_campos_a_atualizar.append('data_recebimento_rafe')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
-                                lista_de_campos_a_atualizar.append('data_recebimento_rafe')
                     
+                    processar = False
                     nova_data_retorno_rafe_label = row.get('data_retorno_rafe','')
                     if type(nova_data_retorno_rafe_label) == str and '/' in nova_data_retorno_rafe_label:
                         nova_data_retorno_rafe_label = datetime.datetime.strptime(nova_data_retorno_rafe_label, '%d/%m/%Y')
@@ -544,12 +566,14 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                         nova_data_retorno_rafe_label = nova_data_retorno_rafe_label.to_pydatetime()
                     if processar:
                         if il.data_retorno_rafe != nova_data_retorno_rafe_label:
-                            il.data_retorno_rafe = nova_data_retorno_rafe_label
+                            il.data_retorno_rafe = to_data_aware(nova_data_retorno_rafe_label)
+                            lista_de_campos_a_atualizar.append('data_retorno_rafe')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
-                                lista_de_campos_a_atualizar.append('data_retorno_rafe')
                     
+                    processar = False
                     nova_data_recebimento_finalizada_label = row.get('data_recebimento_finalizada','')
+                    print(nova_data_recebimento_finalizada_label)
                     if type(nova_data_recebimento_finalizada_label) == str and '/' in nova_data_recebimento_finalizada_label:
                         nova_data_recebimento_finalizada_label = datetime.datetime.strptime(nova_data_recebimento_finalizada_label, '%d/%m/%Y')
                         processar = True
@@ -558,10 +582,10 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                         nova_data_recebimento_finalizada_label = nova_data_recebimento_finalizada_label.to_pydatetime()
                     if processar:
                         if il.data_recebimento_finalizada != nova_data_recebimento_finalizada_label:
-                            il.data_recebimento_finalizada = nova_data_recebimento_finalizada_label
+                            il.data_recebimento_finalizada = to_data_aware(nova_data_recebimento_finalizada_label)
+                            lista_de_campos_a_atualizar.append('data_recebimento_finalizada')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
-                                lista_de_campos_a_atualizar.append('data_recebimento_finalizada')
 
             # 4. Executa a Atualização em Massa
             if ilustracoes_para_atualizar:
