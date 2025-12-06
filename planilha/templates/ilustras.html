@@ -9,7 +9,79 @@
     <link rel="icon" type="image/x-icon" href="{% static 'planilha/images/ico.png' %}">
     {% bootstrap_css %}
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <link rel="stylesheet" href="{% static 'planilha/css/estilos.css' %}">
+    
+    <style>
+        /* Regras para Colapso Horizontal */
+        .collapse-horizontal {
+            overflow: hidden;
+            width: 0 !important;
+            transition: width 0.3s ease;
+            height: auto !important;
+        }
+        .collapse-horizontal.show {
+            width: 350px !important; /* Largura do Painel de Filtros */
+        }
+        .collapsing-horizontal {
+            height: auto !important;
+            transition: width 0.3s ease;
+            width: 0 !important;
+        }
+    
+        .sticky-filter-wrapper {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 60px;
+        }
+    
+        /* CSS para fixar a primeira coluna (Retranca) */
+        .table-responsive .fixed-column {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+    
+        #tabela_de_ilustracoes thead th.fixed-column {
+            z-index: 11;
+        }
+        #tabela_de_ilustracoes thead.sticky-top th.fixed-column {
+            background-color: #e9ecef;
+        }
+    
+        /* RESET base (evita 'fantasmas') */
+        .row.no-gutters #filtroWrapper,
+        .row.no-gutters #tabelaWrapper {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    
+        /* Aplicar gutter somente quando você explicitamente quiser (mantido para referência) */
+        .row.no-gutters #filtroWrapper.col-lg-3,
+        .row.no-gutters #filtroWrapper.col-md-4 {
+            /* deixe em 0 por padrão; o JS decide quando adicionar espaço */
+            padding-right: 0 !important;
+        }
+    
+        .row.no-gutters #tabelaWrapper.col-lg-9,
+        .row.no-gutters #tabelaWrapper.col-md-8 {
+            padding-left: 0 !important;
+        }
+    
+        /* utilitário para casos JS (se precisar marcar) */
+        .row.no-gutters #filtroWrapper.collapsed-no-padding,
+        .row.no-gutters #tabelaWrapper.collapsed-no-padding {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    
+        /* Fim do bloco de estilos relevantes ao gutter */
+    </style>
+    
+    
 </head>
 
 <body>
@@ -18,111 +90,118 @@
 
 
     <div class="container-fluid mt-4">
-
-        <div class="row">
-            <div class="col-lg-3 col-md-4">
-
+        
+        {% if messages %}
+            <div class="container-fluid mt-4">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
             </div>
-            <div class="col-lg-9 col-md-8">
-                <div class="container-fluid mt-4">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message|safe }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">X</button>
+        {% endif %}
+        
+        <h1>
+            {% if ativo == True %}
+            Ilustrações
+            {% else %}
+            Ilustrações excluídas
+            {% endif %}
+        </h1>
+
+        <p>
+            <a href="{% url 'nova_ilustracao' %}" class="btn btn-outline-primary my-2 my-sm-0 mr-2 mb-1" role="button">
+                + ilustração
+            </a>
+            {% if ativo %}
+            <a href="{% url 'ilustras_excluidas' %}" class="btn btn-primary mr-2 mb-1" role="button">
+                Ir para ilustrações excluídas
+            </a>
+            {% else %}
+            <a href="{% url 'ilustras' %}" class="btn btn-primary mr-2 mb-1" role="button">
+                Voltar para ilustrações ativas
+            </a>
+            {% endif %}
+            <button class="btn btn-secondary mr-2 mb-1" type="button" 
+                        data-toggle="collapse" 
+                        data-target="#blocoFiltros" 
+                        aria-expanded="{% if filter.data %}true{% else %}false{% endif %}" 
+                        aria-controls="blocoFiltros" 
+                        id="btnToggleFiltros">
+                        <i class="fas fa-filter"></i> 
+                        <span id="labelToggleFiltros">
+                            {% if filter.data %}Ocultar filtros{% else %}Exibir filtros{% endif %}
+                        </span>
+                    </button>
+        </p>
+
+
+        <div class="row flex-nowrap no-gutters">
+
+            <div class="col-lg-3 col-md-4" id="filtroWrapper">
+                
+                <div class="collapse-horizontal {% if filter.data %}show{% endif %}" id="blocoFiltros">
+                    <div class="sticky-filter-wrapper">
+                        <div class="card shadow-sm p-3 mb-4 bg-white rounded-lg">
+
+                            <h5 class="card-title text-xl font-bold mb-3">Filtrar ilustrações</h5>
+
+                            <div>
+                                Consulte <a href="{% url 'ajuda_regex' %}" target="_blank">aqui</a> um guia de como fazer buscas.
+                                <p></p>
                             </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                <h1>
-                    {% if ativo == True %}
-                    Ilustrações
-                    {% else %}
-                    Ilustrações excluídas
-                    {% endif %}
-                </h1>
 
-                <p>
-                    <a href="{% url 'nova_ilustracao' %}" class="btn btn-outline-primary my-2 my-sm-0" role="button">
-                        + ilustração
-                    </a>
-                    {% if ativo %}
-                    <a href="{% url 'ilustras_excluidas' %}" class="btn btn-primary" role="button">
-                        Ir para ilustrações excluídas
-                    </a>
-                    {% else %}
-                    <a href="{% url 'ilustras' %}" class="btn btn-primary" role="button">
-                        Voltar para ilustrações ativas
-                    </a>
-                    {% endif %}
-
-                    {% if ativo %}
-                    <a href="{% url 'ilustras' %}" class="btn btn-outline-secondary w-100" role="button">
-                        <i class="fas fa-times"></i> Limpar filtros
-                    </a>
-                    {% else %}
-                    <a href="{% url 'ilustras_excluidas' %}" class="btn btn-outline-secondary w-100" role="button">
-                        <i class="fas fa-times"></i> Limpar filtros
-                    </a>
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-
-
-
-
-        <div class="row">
-
-            <!-- COLUNA DO FILTRO (3/12 em telas grandes, 4/12 em telas médias) -->
-            <div class="col-lg-3 col-md-4">
-
-                <!-- Wrapper com position: sticky para fixar na tela durante a rolagem -->
-                <div class="sticky-filter-wrapper">
-                    <div class="card shadow-sm p-3 mb-4 bg-white rounded-lg">
-
-
-
-
-
-                        <h5 class="card-title text-xl font-bold mb-3">Filtrar ilustrações</h5>
-
-                        <div>
-                        Consulte <a href="{% url 'ajuda_regex' %}" target="_blank">aqui</a> um guia de como fazer buscas.
-                        <p></p>
+                            <form method="get">
+                                {{ filter.form.as_p }}
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-success w-100 mb-2">
+                                        <i class="fas fa-filter"></i> Aplicar Filtros
+                                    </button>
+                                    {% if ativo %}
+                                    <a href="{% url 'ilustras' %}" class="btn btn-outline-secondary w-100" role="button">
+                                        <i class="fas fa-times"></i> Limpar filtros
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'ilustras_excluidas' %}" class="btn btn-outline-secondary w-100"
+                                        role="button">
+                                        <i class="fas fa-times"></i> Limpar filtros
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </form>
                         </div>
-
-
-
-                        <form method="get">
-                            {{ filter.form.as_p }}
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-success w-100 mb-2">
-                                    <i class="fas fa-filter"></i> Aplicar Filtros
-                                </button>
-                                {% if ativo %}
-                                <a href="{% url 'ilustras' %}" class="btn btn-outline-secondary w-100" role="button">
-                                    <i class="fas fa-times"></i> Limpar filtros
-                                </a>
-                                {% else %}
-                                <a href="{% url 'ilustras_excluidas' %}" class="btn btn-outline-secondary w-100"
-                                    role="button">
-                                    <i class="fas fa-times"></i> Limpar filtros
-                                </a>
-                                {% endif %}
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-9 col-md-8">
+            <div class="col-lg-9 col-md-8" id="tabelaWrapper">
+                
+                <p class="d-flex align-items-center flex-wrap">
+                    {% if filter.data %}
+                        {% if ativo %}
+                        <a href="{% url 'ilustras' %}" class="btn btn-outline-secondary mr-2 mb-1" role="button">
+                            <i class="fas fa-times"></i> Limpar filtros
+                        </a>
+                        {% else %}
+                        <a href="{% url 'ilustras_excluidas' %}" class="btn btn-outline-secondary mr-2 mb-1" role="button">
+                            <i class="fas fa-times"></i> Limpar filtros
+                        </a>
+                        {% endif %}
+                    {% endif %}
+
+                </p>
+                
                 {% if pre_filtro_ativo %}
                 <div class="alert alert-info alert-dismissible fade show" role="alert">
                     <i class="fas fa-filter me-2"></i> 
                     <strong>Pré-Filtro Ativo:</strong> Esta listagem está filtrada automaticamente pelas suas preferências de projetos/componentes/volume.
                     Você pode **modificar ou desativar** estas preferências na sua <a href="{% url 'preferencias' %}" class="alert-link">página de Preferências</a>.
-                    <!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> -->
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 {% endif %}
                 <p>
@@ -152,7 +231,7 @@
                     <table class="table table-striped table-hover align-middle" id="tabela_de_ilustracoes">
                         <thead class="bg-light sticky-top">
                             <tr>
-                                <th>Retranca</th>
+                                <th class="fixed-column">Retranca</th> 
                                 <th hidden>pk</th>
                                 
                                 {% if preferencias_colunas.exibir_status %}
@@ -255,9 +334,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for il in filter.qs %}
+                            {% for il in filter.qs %} 
                             <tr>
-                                <td>{{ il.retranca|default:"" }}</td>
+                                <td class="fixed-column">{{ il.retranca|default:"" }}</td>
                                 <td hidden>{{ il.pk }}</td>
                                 
                                 {% if preferencias_colunas.exibir_status %}
@@ -364,13 +443,10 @@
                                 </td>
                             </tr>
                             {% endfor %}
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
-
-
-
         </div>
 
         <div class="d-block" style="height: 300px;"></div>
@@ -378,12 +454,107 @@
 
         {% bootstrap_javascript jquery='full' %}
 
-        <!-- Scripts para exportação de dados em CSV e Excel -->
         <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/js/tableexport.min.js"></script>
         <script src="{% static 'planilha/js/scripts.js' %}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            (function() {
+                const blocoFiltros = document.getElementById('blocoFiltros');
+                const filtroWrapper = document.getElementById('filtroWrapper');
+                const tabelaWrapper = document.getElementById('tabelaWrapper');
+            
+                if (!blocoFiltros || !filtroWrapper || !tabelaWrapper) return;
+            
+                function painelAberto() {
+                    filtroWrapper.classList.remove('d-none');
+                    filtroWrapper.classList.add('col-lg-3', 'col-md-4');
+            
+                    tabelaWrapper.classList.remove('col-12');
+                    tabelaWrapper.classList.add('col-lg-9', 'col-md-8');
+            
+                    // remove qualquer padding inline que tenhamos usado para "fechado"
+                    filtroWrapper.style.paddingRight = '';
+                    tabelaWrapper.style.paddingLeft = '';
+                }
+            
+                function painelFechado() {
+                    filtroWrapper.classList.add('d-none');
+                    filtroWrapper.classList.remove('col-lg-3', 'col-md-4');
+            
+                    tabelaWrapper.classList.remove('col-lg-9', 'col-md-8');
+                    tabelaWrapper.classList.add('col-12');
+            
+                    // limpa inline styles de gutter
+                    filtroWrapper.style.paddingRight = '';
+                    tabelaWrapper.style.paddingLeft = '';
+                }
+            
+                function aplicarEstadoAtual() {
+                    // usa a presença da classe 'show' no elemento collapse para decidir
+                    if (blocoFiltros.classList.contains('show')) {
+                        painelAberto();
+                    } else {
+                        painelFechado();
+                    }
+                }
+            
+                // 1) Bind em eventos bootstrap (quando disponíveis)
+                // usamos try/catch para não falhar se bootstrap não estiver presente
+                try {
+                    blocoFiltros.addEventListener('shown.bs.collapse', function(){ painelAberto(); });
+                    blocoFiltros.addEventListener('hidden.bs.collapse', function(){ painelFechado(); });
+                } catch (e) {
+                    // nada — fallback com MutationObserver abaixo
+                }
+            
+                // 2) MutationObserver: observa mudanças no atributo 'class' do bloco de filtros
+                const mo = new MutationObserver(function(mutations) {
+                    for (const m of mutations) {
+                        if (m.type === 'attributes' && m.attributeName === 'class') {
+                            aplicarEstadoAtual();
+                            break;
+                        }
+                    }
+                });
+                mo.observe(blocoFiltros, { attributes: true, attributeFilter: ['class'] });
+            
+                // 3) Verificações iniciais com pequenos delays para cobrir diferentes ordens de execução
+                // (bootstrap pode inicializar e disparar eventos em momentos diferentes)
+                document.addEventListener('DOMContentLoaded', function() {
+                    // chamada imediata
+                    aplicarEstadoAtual();
+                    // reforços para cobrir casos onde bootstrap/jQuery terminam init depois
+                    setTimeout(aplicarEstadoAtual, 50);
+                    setTimeout(aplicarEstadoAtual, 200);
+                    setTimeout(aplicarEstadoAtual, 600);
+                });
+            
+                // 4) proteção: caso outro script remova o element do DOM e o reinsira,
+                // re-aplicar estado ao reconectar (opcional)
+                // (observa mudanças no corpo para reconexões do blocoFiltros)
+                const bodyMo = new MutationObserver(function(mutations) {
+                    for (const m of mutations) {
+                        // se blocoFiltros estiver no DOM, checamos estado
+                        if (document.contains(blocoFiltros)) {
+                            aplicarEstadoAtual();
+                            break;
+                        }
+                    }
+                });
+                bodyMo.observe(document.body, { childList: true, subtree: true });
+            
+            })();
+            </script>
+            
+
+            
+
+        
+        
+            
+            
 
 </body>
 
