@@ -149,29 +149,29 @@
                                 <th>Retranca</th>
                                 <th hidden>pk</th>
                                 <th>Status</th>
-                                <th hidden>Categoria</th>
-                                <th hidden>Localização</th>
+                                <th>Categoria</th>
+                                <th>Localização</th>
                                 <th>Volume</th>
                                 <th>Unidade</th>
                                 <th>Capítulo ou seção</th>
                                 <th>Página</th>
                                 <th>Tipo</th>
                                 <th>Descrição</th>
-                                <th hidden>Observação editorial e núcleo</th>
+                                <th>Observação editorial e núcleo</th>
                                 <th>Lote</th>
-                                <th hidden>Data de liberação para arte</th>
-                                <th hidden>Data de envio do pedido</th>
-                                <th hidden>Data de recebimento do rafe</th>
-                                <th hidden>Data de retorno do rafe</th>
-                                <th hidden>Data de recebimento da finalizada</th>
+                                <th>Data de liberação para arte</th>
+                                <th>Data de envio do pedido</th>
+                                <th>Data de recebimento do rafe</th>
+                                <th>Data de retorno do rafe</th>
+                                <th>Data de recebimento da finalizada</th>
                                 <th>Classificação</th>
                                 <th>Crédito</th>
-                                <th hidden>Ilustrador resgate</th>
-                                <th hidden>Ilustrador criação</th>
-                                <th hidden>Ilustrador ajuste</th>
-                                <th hidden>Observação da arte</th>
+                                <th>Ilustrador resgate</th>
+                                <th>Ilustrador criação</th>
+                                <th>Ilustrador ajuste</th>
+                                <th>Observação da arte</th>
                                 <th>Pagamento</th>
-                                <th hidden>Modificada</th>
+                                <th>Modificada</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -182,31 +182,31 @@
                                 <td>{{ il.retranca }}</td>
                                 <td hidden>{{ il.pk }}</td>
                                 <td>{{ il.status }}</td>
-                                <td hidden>{{ il.categoria }}</td>
-                                <td hidden>{{ il.localizacao }}</td>
+                                <td>{{ il.categoria }}</td>
+                                <td>{{ il.localizacao }}</td>
                                 <td>{{ il.volume }}</td>
                                 <td>{{ il.unidade }}</td>
                                 <td>{{ il.capitulo_secao }}</td>
                                 <td>{{ il.pagina }}</td>
                                 <td>{{ il.tipo }}</td>
                                 <td>{{ il.descricao }}</td>
-                                <td hidden>{{ il.observacao_edit_nuc }}</td>
+                                <td>{{ il.observacao_edit_nuc }}</td>
                                 <td>{{ il.lote }}</td>
-                                <td hidden>{{ il.data_liberacao_para_arte | date:"d/m/Y" }}</td>
-                                <td hidden>{{ il.data_envio_pedido | date:"d/m/Y" }}</td>
-                                <td hidden>{{ il.data_recebimento_rafe | date:"d/m/Y" }}</td>
-                                <td hidden>{{ il.data_recebimento_finalizada | date:"d/m/Y" }}</td>
-                                <td hidden>{{ il.data_retorno_rafe | date:"d/m/Y" }}</td>
+                                <td>{{ il.data_liberacao_para_arte | date:"d/m/Y" }}</td>
+                                <td>{{ il.data_envio_pedido | date:"d/m/Y" }}</td>
+                                <td>{{ il.data_recebimento_rafe | date:"d/m/Y" }}</td>
+                                <td>{{ il.data_recebimento_finalizada | date:"d/m/Y" }}</td>
+                                <td>{{ il.data_retorno_rafe | date:"d/m/Y" }}</td>
                                 <td>{{ il.classificacao }}</td>
                                 <td>{{ il.credito }}</td>
-                                <td hidden>{{ il.ilustrador_resgate }}</td>
-                                <td hidden>{{ il.ilustrador }}</td>
-                                <td hidden>{{ il.ilustrador_ajuste }}</td>
-                                <td hidden>{{ il.observacao_arte }}</td>
+                                <td>{{ il.ilustrador_resgate }}</td>
+                                <td>{{ il.ilustrador }}</td>
+                                <td>{{ il.ilustrador_ajuste }}</td>
+                                <td>{{ il.observacao_arte }}</td>
                                 <td>{{ il.pagamento }}</td>
-                                <td hidden>{{ il.modificado_em | date:"d/m/Y" }}</td>
+                                <td>{{ il.modificado_em | date:"d/m/Y" }}</td>
                                 <td class="text-nowrap">
-                                    <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info"
+                                    <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info" target="_blank"
                                         title="Use Ctrl + Clique para abrir em nova janela">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
