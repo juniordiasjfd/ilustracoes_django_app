@@ -130,12 +130,18 @@
 
                     <button class="btn btn-success btn-sm"
                         onclick="exportTableToCSV('tabela_de_ilustracoes', 'ilustracoes.csv')">
-                        Exportar para CSV
+                        Exportar tudo para CSV
                     </button>
                     <button class="btn btn-success btn-sm"
                         onclick="exportTable('tabela_de_ilustracoes', 'xlsx', 'ilustracoes');">
-                        Exportar para Excel
+                        Exportar tudo para Excel
                     </button>
+
+                    <a href="{% url 'exportar_creditos_csv' %}?{{ request.GET.urlencode }}" 
+                        class="btn btn-primary btn-sm" 
+                        role="button">
+                        Exportar créditos em CSV
+                        </a>
 
                     <a href="{% url 'upload_ilustracoes_excel' %}" class="btn btn-warning btn-sm">
                         <i class="fas fa-file-upload"></i> Importar atualizações do Excel
@@ -148,63 +154,208 @@
                             <tr>
                                 <th>Retranca</th>
                                 <th hidden>pk</th>
+                                
+                                {% if preferencias_colunas.exibir_status %}
                                 <th>Status</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_categoria %}
                                 <th>Categoria</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_localizacao %}
                                 <th>Localização</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_volume %}
                                 <th>Volume</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_unidade %}
                                 <th>Unidade</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_capitulo_secao %}
                                 <th>Capítulo ou seção</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_pagina %}
                                 <th>Página</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_tipo %}
                                 <th>Tipo</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_descricao %}
                                 <th>Descrição</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_observacao_edit_nuc %}
                                 <th>Observação editorial e núcleo</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_lote %}
                                 <th>Lote</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_liberacao_para_arte %}
                                 <th>Data de liberação para arte</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_envio_pedido %}
                                 <th>Data de envio do pedido</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_recebimento_rafe %}
                                 <th>Data de recebimento do rafe</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_retorno_rafe %}
                                 <th>Data de retorno do rafe</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_recebimento_finalizada %}
                                 <th>Data de recebimento da finalizada</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_classificacao %}
                                 <th>Classificação</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_credito %}
                                 <th>Crédito</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_ilustrador_resgate %}
                                 <th>Ilustrador resgate</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_ilustrador %}
                                 <th>Ilustrador criação</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_ilustrador_ajuste %}
                                 <th>Ilustrador ajuste</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_observacao_arte %}
                                 <th>Observação da arte</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_pagamento %}
                                 <th>Pagamento</th>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_modificado_em %}
                                 <th>Modificada</th>
+                                {% endif %}
+                                
                                 <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for il in filter.qs %}
-
                             <tr>
-                                <td>{{ il.retranca }}</td>
+                                <td>{{ il.retranca|default:"" }}</td>
                                 <td hidden>{{ il.pk }}</td>
-                                <td>{{ il.status }}</td>
-                                <td>{{ il.categoria }}</td>
-                                <td>{{ il.localizacao }}</td>
-                                <td>{{ il.volume }}</td>
-                                <td>{{ il.unidade }}</td>
-                                <td>{{ il.capitulo_secao }}</td>
-                                <td>{{ il.pagina }}</td>
-                                <td>{{ il.tipo }}</td>
-                                <td>{{ il.descricao }}</td>
-                                <td>{{ il.observacao_edit_nuc }}</td>
-                                <td>{{ il.lote }}</td>
-                                <td>{{ il.data_liberacao_para_arte | date:"d/m/Y" }}</td>
-                                <td>{{ il.data_envio_pedido | date:"d/m/Y" }}</td>
-                                <td>{{ il.data_recebimento_rafe | date:"d/m/Y" }}</td>
-                                <td>{{ il.data_recebimento_finalizada | date:"d/m/Y" }}</td>
-                                <td>{{ il.data_retorno_rafe | date:"d/m/Y" }}</td>
-                                <td>{{ il.classificacao }}</td>
-                                <td>{{ il.credito }}</td>
-                                <td>{{ il.ilustrador_resgate }}</td>
-                                <td>{{ il.ilustrador }}</td>
-                                <td>{{ il.ilustrador_ajuste }}</td>
-                                <td>{{ il.observacao_arte }}</td>
-                                <td>{{ il.pagamento }}</td>
-                                <td>{{ il.modificado_em | date:"d/m/Y" }}</td>
+                                
+                                {% if preferencias_colunas.exibir_status %}
+                                <td>{{ il.get_status_display|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_categoria %}
+                                <td>{{ il.get_categoria_display|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_localizacao %}
+                                <td>{{ il.get_localizacao_display|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_volume %}
+                                <td>{{ il.volume|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_unidade %}
+                                <td>{{ il.unidade|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_capitulo_secao %}
+                                <td>{{ il.capitulo_secao|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_pagina %}
+                                <td>{{ il.pagina|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_tipo %}
+                                <td>{{ il.get_tipo_display|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_descricao %}
+                                <td>{{ il.descricao|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_observacao_edit_nuc %}
+                                <td>{{ il.observacao_edit_nuc|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_lote %}
+                                <td>{{ il.lote|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_liberacao_para_arte %}
+                                <td>{{ il.data_liberacao_para_arte | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_envio_pedido %}
+                                <td>{{ il.data_envio_pedido | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_recebimento_rafe %}
+                                <td>{{ il.data_recebimento_rafe | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_retorno_rafe %}
+                                <td>{{ il.data_retorno_rafe | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_data_recebimento_finalizada %}
+                                <td>{{ il.data_recebimento_finalizada | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_classificacao %}
+                                <td>{{ il.classificacao|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_credito %}
+                                <td>{{ il.credito|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_ilustrador_resgate %}
+                                <td>{{ il.ilustrador_resgate|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_ilustrador %}
+                                <td>{{ il.ilustrador|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_ilustrador_ajuste %}
+                                <td>{{ il.ilustrador_ajuste|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_observacao_arte %}
+                                <td>{{ il.observacao_arte|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_pagamento %}
+                                <td>{{ il.get_pagamento_display|default:"" }}</td>
+                                {% endif %}
+                                
+                                {% if preferencias_colunas.exibir_modificado_em %}
+                                <td>{{ il.modificado_em | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
+                                
                                 <td class="text-nowrap">
                                     <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info" target="_blank"
                                         title="Use Ctrl + Clique para abrir em nova janela">
@@ -212,10 +363,8 @@
                                     </a>
                                 </td>
                             </tr>
-
                             {% endfor %}
                         </tbody>
-
                     </table>
                 </div>
             </div>

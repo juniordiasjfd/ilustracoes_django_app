@@ -20,4 +20,6 @@ urlpatterns = [
     path('registrar/', views.UsuarioCreate.as_view(), name='registrar'),
     path('gerenciar-usuarios/<int:pk>/', views.UsuarioUpdateView.as_view(), name='gerenciar_usuario'),
     path('gerenciar-usuarios/todos/', views.UsuarioListarTodosView.as_view(), name='gerenciar_usuarios_todos'),
+
+    path('preferencias/colunas/', views.PreferenciasColunasUpdateView.as_view(), name='editar_preferencias_colunas'),
 ]

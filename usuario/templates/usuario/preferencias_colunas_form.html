@@ -1,0 +1,51 @@
+{% extends 'usuario/modelo.html' %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block titulo %}
+    <title>Colunas a exibir</title>
+{% endblock %}
+
+
+{% block conteudo %}
+<div class="container">
+    <h2>Colunas a exibir</h2>
+    <p>Selecione as colunas que você deseja visualizar na tabela principal de ilustrações.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-grid">
+            {% for field in form %}
+            <div class="form-check mb-2">
+                {% if field.field.widget.input_type == 'checkbox' %}
+                    {{ field }}
+                    <label class="form-check-label" for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                {% else %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                {% endif %}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary mt-3">Salvar preferências</button>
+        <a href="{% url 'ilustras' %}" class="btn btn-secondary mt-3">Cancelar</a>
+    </form>
+</div>
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+    }
+</style>
+
+{% endblock conteudo %}

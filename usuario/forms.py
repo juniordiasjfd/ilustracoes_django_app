@@ -1,5 +1,5 @@
 from django import forms
-from .models import PreferenciasPreFiltro, PreenchimentoAutomaticoDeCampos
+from .models import PreferenciasPreFiltro, PreenchimentoAutomaticoDeCampos, PreferenciasColunasTabela
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
@@ -88,3 +88,41 @@ class UsuarioActivateDeactivateForm(forms.ModelForm):
         self.fields['is_active'].label = 'Usuário ativo (Permitir login)'
         # Opcional: Adicione um placeholder para o select2 de grupos
         self.fields['groups'].widget.attrs['data-placeholder'] = "Gerenciar grupos do usuário..."
+
+class PreferenciasColunasTabelaForm(forms.ModelForm):
+    """
+    Formulário para o usuário editar quais colunas do modelo Ilustracao
+    devem ser exibidas na tabela principal.
+    """
+    class Meta:
+        model = PreferenciasColunasTabela
+        fields = [
+            'exibir_status',
+            'exibir_categoria',
+            'exibir_localizacao',
+            'exibir_volume',
+            'exibir_unidade',
+            'exibir_capitulo_secao',
+            'exibir_pagina',
+            'exibir_tipo',
+            'exibir_descricao',
+            'exibir_observacao_edit_nuc',
+            'exibir_lote',
+            'exibir_data_liberacao_para_arte',
+            'exibir_data_envio_pedido',
+            'exibir_data_recebimento_rafe',
+            'exibir_data_retorno_rafe',
+            'exibir_data_recebimento_finalizada',
+            'exibir_classificacao',
+            'exibir_credito',
+            'exibir_ilustrador_resgate',
+            'exibir_ilustrador',
+            'exibir_ilustrador_ajuste',
+            'exibir_observacao_arte',
+            'exibir_pagamento',
+            'exibir_modificado_em'
+        ]
+        widgets = {
+            # O Django automaticamente renderiza BooleanField como CheckboxInput,
+            # mas você pode personalizar se desejar.
+        }

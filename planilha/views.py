@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.views.generic.edit import UpdateView
+from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,12 +12,14 @@ import pandas
 import datetime
 from django.utils import timezone
 from django.db import transaction
+from django.http import HttpResponse
+import csv
 
 
 from .models import Projeto, Componente, Ilustracao, Ilustrador, Credito
 from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm, UploadExcelForm
 from .filter import IlustracaoFilter
-from usuario.models import PreferenciasPreFiltro
+from usuario.models import PreferenciasPreFiltro, PreferenciasColunasTabela
 from django.views.generic.edit import FormView
 
 
@@ -34,6 +37,45 @@ def index(request):
     return render(request, 'index.html')
 
 
+def aplicar_pre_filtro_ilustras(request, queryset_base):
+    """
+    Aplica o pré-filtro de usuário (preferências) ao QuerySet base.
+    Retorna o QuerySet filtrado e o status de 'pre_filtro_ativo'.
+    """
+    pre_filtro_ativo = False
+    queryset_filtrado = queryset_base
+
+    try:
+        preferencias = PreferenciasPreFiltro.objects.get(usuario=request.user)
+        filtro_q = Q()
+        
+        # Lógica de Pré-Filtro (idêntica à sua)
+        
+        #### Filtro por PROJETOS (ManyToMany)
+        projetos_ids = preferencias.projetos.values_list('id', flat=True)
+        if projetos_ids:
+            filtro_q &= Q(projeto__id__in=projetos_ids)
+            
+        #### Filtro por COMPONENTES (ManyToMany)
+        componentes_ids = preferencias.componentes.values_list('id', flat=True)
+        if componentes_ids:
+            filtro_q &= Q(componente__id__in=componentes_ids)
+            
+        #### Filtro por VOLUME (PositiveIntegerField)
+        if preferencias.volume is not None:
+            filtro_q &= Q(volume=preferencias.volume)
+            
+        if preferencias.projetos.exists() or preferencias.componentes.exists() or preferencias.volume is not None:
+            pre_filtro_ativo = True
+            
+        queryset_filtrado = queryset_base.filter(filtro_q)
+        
+    except PreferenciasPreFiltro.DoesNotExist:
+        # Se não houver preferências, retorna o QuerySet base
+        pass
+        
+    return queryset_filtrado, pre_filtro_ativo
+
 @login_required
 def ilustras(request):
     ###############################################
@@ -45,39 +87,49 @@ def ilustras(request):
         componente__ativo=True,
         )
     num_linhas_total = queryset_base.count()
-    # 2. Lógica do Pré-Filtro
-    pre_filtro_ativo = False
+
+    queryset_filtrado, pre_filtro_ativo = aplicar_pre_filtro_ilustras(request, queryset_base)
+
+    # # 2. Lógica do Pré-Filtro
+    # pre_filtro_ativo = False
+    # try:
+    #     # Tenta buscar as preferências do usuário logado
+    #     preferencias = PreferenciasPreFiltro.objects.get(usuario=request.user)
+    #     # Inicia um filtro vazio
+    #     filtro_q = Q()
+    #     # Aplica filtros se os campos estiverem preenchidos nas preferências
+    #     #### Filtro por PROJETOS (ManyToMany)
+    #     projetos_ids = preferencias.projetos.values_list('id', flat=True)
+    #     if projetos_ids:
+    #         filtro_q &= Q(projeto__id__in=projetos_ids)
+    #     #### Filtro por COMPONENTES (ManyToMany)
+    #     componentes_ids = preferencias.componentes.values_list('id', flat=True)
+    #     if componentes_ids:
+    #         filtro_q &= Q(componente__id__in=componentes_ids)
+    #     #### Filtro por VOLUME (PositiveIntegerField)
+    #     if preferencias.volume is not None:
+    #         # Note: O campo `volume` no modelo Ilustracao é IntegerField. 
+    #         # Assumindo que você quer uma correspondência exata.
+    #         filtro_q &= Q(volume=preferencias.volume)
+    #     if preferencias.projetos.exists() or preferencias.componentes.exists() or preferencias.volume is not None:
+    #         pre_filtro_ativo = True
+    #     # Aplica o filtro Q ao queryset base
+    #     # Se filtro_q estiver vazio (nenhuma preferência salva), aplica um filtro nulo (Q())
+    #     # que não altera o queryset.
+    #     queryset_filtrado = queryset_base.filter(filtro_q)
+    # except PreferenciasPreFiltro.DoesNotExist:
+    #     # Se o usuário não tem preferências salvas, usa o queryset base completo
+    #     queryset_filtrado = queryset_base
+    ###############################################
     try:
-        # Tenta buscar as preferências do usuário logado
-        preferencias = PreferenciasPreFiltro.objects.get(usuario=request.user)
-        # Inicia um filtro vazio
-        filtro_q = Q()
-        # Aplica filtros se os campos estiverem preenchidos nas preferências
-        #### Filtro por PROJETOS (ManyToMany)
-        projetos_ids = preferencias.projetos.values_list('id', flat=True)
-        if projetos_ids:
-            filtro_q &= Q(projeto__id__in=projetos_ids)
-        #### Filtro por COMPONENTES (ManyToMany)
-        componentes_ids = preferencias.componentes.values_list('id', flat=True)
-        if componentes_ids:
-            filtro_q &= Q(componente__id__in=componentes_ids)
-        #### Filtro por VOLUME (PositiveIntegerField)
-        if preferencias.volume is not None:
-            # Note: O campo `volume` no modelo Ilustracao é IntegerField. 
-            # Assumindo que você quer uma correspondência exata.
-            filtro_q &= Q(volume=preferencias.volume)
-        if preferencias.projetos.exists() or preferencias.componentes.exists() or preferencias.volume is not None:
-            pre_filtro_ativo = True
-        # Aplica o filtro Q ao queryset base
-        # Se filtro_q estiver vazio (nenhuma preferência salva), aplica um filtro nulo (Q())
-        # que não altera o queryset.
-        queryset_filtrado = queryset_base.filter(filtro_q)
-    except PreferenciasPreFiltro.DoesNotExist:
-        # Se o usuário não tem preferências salvas, usa o queryset base completo
-        queryset_filtrado = queryset_base
+        preferencias_colunas = PreferenciasColunasTabela.objects.get(usuario=request.user)
+    except PreferenciasColunasTabela.DoesNotExist:
+        # Se não houver preferências salvas, cria-se um objeto temporário com os defaults
+        preferencias_colunas = PreferenciasColunasTabela()
     ###############################################
     # filter = IlustracaoFilter(request.GET, queryset=Ilustracao.objects.filter(ativo=True))
-    filter = IlustracaoFilter(request.GET, queryset=queryset_filtrado)
+    queryset_ordenado = queryset_filtrado.order_by('-lote')
+    filter = IlustracaoFilter(request.GET, queryset=queryset_ordenado)
     num_linhas = filter.qs.count()
     context = {
         'ativo': True,
@@ -85,6 +137,7 @@ def ilustras(request):
         'num_linhas': num_linhas,
         'num_linhas_total': num_linhas_total,
         'pre_filtro_ativo': pre_filtro_ativo,
+        'preferencias_colunas': preferencias_colunas,
     }
     return render(request, 'ilustras.html', context)
 @login_required
@@ -608,3 +661,56 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
             print(f"Erro de processamento do Excel: {e}")
             # Se houver erro, retorna ao formulário com o contexto do erro
             return self.form_invalid(form)
+
+
+class ExportarCreditosCSV(View):
+    """
+    Exporta Retranca e Crédito das Ilustrações Filtradas em formato CSV.
+    """
+    
+    def get(self, request, *args, **kwargs):
+
+        
+
+        # 1. Definir o QuerySet Base
+        queryset_base = Ilustracao.objects.filter(
+            ativo=True,
+            projeto__ativo=True,
+            componente__ativo=True
+        ).order_by('-lote')
+
+        queryset_filtrado_pelo_prefiro, _ = aplicar_pre_filtro_ilustras(request, queryset_base)
+        queryset_ordenado = queryset_filtrado_pelo_prefiro.order_by('-lote')
+
+        # 2. Aplicar os filtros da requisição (request.GET)
+        # O self.request.GET contém os mesmos parâmetros da URL.
+        filtro = IlustracaoFilter(self.request.GET, queryset=queryset_ordenado)
+        ilustracoes_filtradas = filtro.qs
+        
+        # 3. Preparar a resposta CSV
+        response = HttpResponse(
+            content_type='text/csv',
+            headers={
+                'Content-Disposition': 'attachment; filename="creditos_ilustracoes_filtradas.csv"'
+            }
+        )
+        response.write(u'\ufeff'.encode('utf8'))
+
+        writer = csv.writer(response)
+        
+        # Cabeçalho do CSV
+        writer.writerow(['retranca', 'credito'])
+
+        # 4. Escrever os dados no CSV
+        for ilustracao in ilustracoes_filtradas:
+            # Acessa o nome do crédito (assumindo que 'credito' é um ForeignKey com campo 'nome')
+            # Use o operador ternário para lidar com campos nulos.
+            credito_nome = ilustracao.credito.nome if ilustracao.credito else ""
+            
+            # Escreve a linha no CSV
+            writer.writerow([
+                ilustracao.retranca,
+                credito_nome
+            ])
+
+        return response

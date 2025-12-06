@@ -6,10 +6,11 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.contrib.auth.models import User, Group
+from django.contrib import messages
 
 
-from .models import PreferenciasPreFiltro, PreenchimentoAutomaticoDeCampos
-from .forms import PreferenciasPreFiltroModelForm, PreenchimentoAutomaticoDeCamposModelForm, UsuarioModelForm, UsuarioActivateDeactivateForm
+from .models import PreferenciasPreFiltro, PreenchimentoAutomaticoDeCampos, PreferenciasColunasTabela
+from .forms import PreferenciasPreFiltroModelForm, PreenchimentoAutomaticoDeCamposModelForm, UsuarioModelForm, UsuarioActivateDeactivateForm, PreferenciasColunasTabelaForm
 
 
 
@@ -187,3 +188,25 @@ class UsuarioCreate(CreateView):
         self.object.is_active = False
         self.object.save()
         return url
+
+class PreferenciasColunasUpdateView(LoginRequiredMixin, UpdateView):
+    model = PreferenciasColunasTabela
+    form_class = PreferenciasColunasTabelaForm
+    template_name = 'usuario/preferencias_colunas_form.html'
+    success_url = reverse_lazy('editar_preferencias_colunas')
+
+    def get_object(self, queryset=None):
+        """
+        Sobrescreve get_object para garantir que ele retorne a instância 
+        associada ao usuário logado, criando-a se não existir (get_or_create).
+        """
+        # Garante que apenas a instância do usuário atual seja buscada/criada
+        obj, created = self.model.objects.get_or_create(usuario=self.request.user)
+        return obj
+
+    def form_valid(self, form):
+        """
+        Adiciona uma mensagem de sucesso após o salvamento.
+        """
+        messages.success(self.request, 'Suas preferências de colunas foram salvas com sucesso!')
+        return super().form_valid(form)

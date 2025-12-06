@@ -50,4 +50,6 @@ urlpatterns = [
     path('creditos/<int:pk>/', views.CreditoUpdateView.as_view(), name='detalhe_credito'),
     path('creditos/<int:pk>/deletar/', views.deletar_credito, name='deletar_credito'),
     path('creditos/<int:pk>/reativar/', views.reativar_credito, name='reativar_credito'),
+
+    path('exportar/creditos/csv/', views.ExportarCreditosCSV.as_view(), name='exportar_creditos_csv'),
 ]
