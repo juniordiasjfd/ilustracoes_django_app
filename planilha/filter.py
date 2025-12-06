@@ -76,6 +76,11 @@ class IlustracaoFilter(django_filters.FilterSet):
         label='Tipo',
         help_text='Use Ctrl para selecionar dois ou mais.'
     )
+    lote = django_filters.NumberFilter(
+        lookup_expr='exact',
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        label='Lote'
+    )
     class Meta:
         model = Ilustracao
         # Removemos fields pois definimos todos explicitamente acima
