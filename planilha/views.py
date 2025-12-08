@@ -673,11 +673,15 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
     # -------------------------------
     MAP_COLUNAS = {
         "Retranca": "retranca",
-        "Descrição": "descricao",
+        "Status": "status",
+        "Categoria": "categoria",
+        "Localização": "localizacao",
         "Volume": "volume",
-        "Página": "pagina",
         "Unidade": "unidade",
         "Capítulo ou seção": "capitulo_secao",
+        "Página": "pagina",
+        "Tipo": "tipo",
+        "Descrição": "descricao",
         "Observação editorial e núcleo": "observacao_edit_nuc",
         "Lote": "lote",
         "Data de liberação do lote": "data_liberacao_para_arte",
@@ -686,16 +690,12 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
         "Data de retorno do rafe": "data_retorno_rafe",
         "Data de recebimento da finalizada": "data_recebimento_finalizada",
         "Classificação": "classificacao",
-        "Observação arte": "observacao_arte",
-        "Status": "status",
-        "Categoria": "categoria",
-        "Localização": "localizacao",
-        "Tipo": "tipo",
-        "Pagamento": "pagamento",
-        "Ilustrador criação": "ilustrador",
-        "Ilustrador resgate": "ilustrador_resgate",
-        "Ilustrador ajuste": "ilustrador_ajuste",
         "Crédito": "credito",
+        "Ilustrador resgate": "ilustrador_resgate",
+        "Ilustrador criação": "ilustrador",
+        "Ilustrador ajuste": "ilustrador_ajuste",
+        "Observação da arte": "observacao_arte",
+        "Pagamento": "pagamento",
         "Projeto": "projeto",
         "Componente": "componente",
     }
@@ -704,15 +704,15 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
     # CAMPOS OBRIGATÓRIOS (do modelo)
     # ------------------------------------
     COLUNAS_OBRIGATORIAS = [
-        "Retranca",
-        "Descrição",
-        "Volume",
-        "Status",
-        "Categoria",
-        "Localização",
-        "Tipo",
-        "Projeto",
-        "Componente",
+        "retranca",
+        "descricao",
+        "volume",
+        "status",
+        "categoria",
+        "localizacao",
+        "tipo",
+        "projeto",
+        "componente",
     ]
 
     def form_valid(self, form):
@@ -742,7 +742,9 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
 
         for index, row in df.iterrows():
             try:
-                # Foreign keys obrigatórias
+                # -----------------------------
+                # 1. Foreign Keys Obrigatórias
+                # -----------------------------
                 try:
                     projeto = Projeto.objects.get(nome=row["projeto"])
                 except Projeto.DoesNotExist:
@@ -752,38 +754,98 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
                     componente = Componente.objects.get(nome=row["componente"])
                 except Componente.DoesNotExist:
                     raise Exception(f"Componente '{row['componente']}' não encontrado.")
+                
+                # -----------------------------
+                # 2. Mapeamento de Dados
+                # -----------------------------
+                
+                # Campos de Data (requerem conversão para None se forem NaT/NaN)
+                data_liberacao_para_arte = row.get("data_liberacao_para_arte")
+                if pandas.notna(data_liberacao_para_arte):
+                    # Se for uma data válida, garante que ela esteja em formato Python (date ou datetime)
+                    if isinstance(data_liberacao_para_arte, pandas.Timestamp):
+                        data_liberacao_para_arte = data_liberacao_para_arte.date()
+                else:
+                    data_liberacao_para_arte = None
 
+                data_envio_pedido = row.get("data_envio_pedido")
+                if pandas.notna(data_envio_pedido):
+                    if isinstance(data_envio_pedido, pandas.Timestamp):
+                        data_envio_pedido = data_envio_pedido.date()
+                else:
+                    data_envio_pedido = None
+                    
+                data_recebimento_rafe = row.get("data_recebimento_rafe")
+                if pandas.notna(data_recebimento_rafe):
+                    if isinstance(data_recebimento_rafe, pandas.Timestamp):
+                        data_recebimento_rafe = data_recebimento_rafe.date()
+                else:
+                    data_recebimento_rafe = None
+                    
+                data_retorno_rafe = row.get("data_retorno_rafe")
+                if pandas.notna(data_retorno_rafe):
+                    if isinstance(data_retorno_rafe, pandas.Timestamp):
+                        data_retorno_rafe = data_retorno_rafe.date()
+                else:
+                    data_retorno_rafe = None
+                    
+                data_recebimento_finalizada = row.get("data_recebimento_finalizada")
+                if pandas.notna(data_recebimento_finalizada):
+                    if isinstance(data_recebimento_finalizada, pandas.Timestamp):
+                        data_recebimento_finalizada = data_recebimento_finalizada.date()
+                else:
+                    data_recebimento_finalizada = None
+
+                # Campos Numéricos/String Opcionais (garantir None em caso de NaN)
+                pagina = row.get("pagina") if pandas.notna(row.get("pagina")) else None
+                unidade = row.get("unidade") if pandas.notna(row.get("unidade")) else None
+                capitulo_secao = row.get("capitulo_secao") if pandas.notna(row.get("capitulo_secao")) else None
+                observacao_edit_nuc = row.get("observacao_edit_nuc") if pandas.notna(row.get("observacao_edit_nuc")) else None
+                
+                # CORREÇÃO PARA O ERRO 'lote expected a number but got nan'
+                lote = row.get("lote") if pandas.notna(row.get("lote")) else None
+                
+                classificacao = row.get("classificacao") if pandas.notna(row.get("classificacao")) else None
+                observacao_arte = row.get("observacao_arte") if pandas.notna(row.get("observacao_arte")) else None
+                pagamento = row.get("pagamento") if pandas.notna(row.get("pagamento")) else None
+
+
+                # -----------------------------
+                # 3. Criação da Ilustração
+                # -----------------------------
+                
                 ilustracao = Ilustracao(
                     retranca=row["retranca"],
                     descricao=row["descricao"],
                     volume=row["volume"],
 
-                    pagina=row.get("pagina"),
-                    unidade=row.get("unidade"),
-                    capitulo_secao=row.get("capitulo_secao"),
-                    observacao_edit_nuc=row.get("observacao_edit_nuc"),
-                    lote=row.get("lote"),
-                    data_liberacao_para_arte=row.get("data_liberacao_para_arte"),
-                    data_envio_pedido=row.get("data_envio_pedido"),
-                    data_recebimento_rafe=row.get("data_recebimento_rafe"),
-                    data_retorno_rafe=row.get("data_retorno_rafe"),
-                    data_recebimento_finalizada=row.get("data_recebimento_finalizada"),
-                    classificacao=row.get("classificacao"),
-                    observacao_arte=row.get("observacao_arte"),
+                    pagina=pagina,
+                    unidade=unidade,
+                    capitulo_secao=capitulo_secao,
+                    observacao_edit_nuc=observacao_edit_nuc,
+                    lote=lote, # Agora pode ser None
+                    
+                    # Campos de Data corrigidos
+                    data_liberacao_para_arte=data_liberacao_para_arte,
+                    data_envio_pedido=data_envio_pedido,
+                    data_recebimento_rafe=data_recebimento_rafe,
+                    data_retorno_rafe=data_retorno_rafe,
+                    data_recebimento_finalizada=data_recebimento_finalizada,
+                    
+                    classificacao=classificacao,
+                    observacao_arte=observacao_arte,
 
                     status=row["status"],
                     categoria=row["categoria"],
                     localizacao=row["localizacao"],
                     tipo=row["tipo"],
-
-                    # pagamento opcional
-                    pagamento=row.get("pagamento"),
+                    pagamento=pagamento,
 
                     projeto=projeto,
                     componente=componente,
                 )
 
-                # FKs opcionais
+                # 4. FKs opcionais
                 if pandas.notna(row.get("ilustrador")):
                     ilustracao.ilustrador = Ilustrador.objects.get(nome=row["ilustrador"])
 
