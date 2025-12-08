@@ -714,7 +714,22 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
         "projeto",
         "componente",
     ]
-
+    def _limpar_sigla_ilustrador(self, valor):
+        """
+        Aceita 'SIGLA' ou 'SIGLA - NOME' e retorna apenas a SIGLA.
+        Retorna None se o valor for nulo ou vazio após a limpeza.
+        """
+        if pandas.notna(valor) and valor:
+            valor_str = str(valor).strip()
+            
+            # Se contiver o separador ' - ', pega o primeiro elemento
+            if ' - ' in valor_str:
+                return valor_str.split(' - ')[0].strip()
+            
+            # Caso contrário, assume que é apenas a sigla
+            return valor_str
+            
+        return None
     def form_valid(self, form):
         arquivo = form.cleaned_data["arquivo"]
 
@@ -845,18 +860,44 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
                     componente=componente,
                 )
 
-                # 4. FKs opcionais
-                if pandas.notna(row.get("ilustrador")):
-                    ilustracao.ilustrador = Ilustrador.objects.get(nome=row["ilustrador"])
+                # ---------------------------------------------
+                # 4. FKs opcionais de Ilustrador (com flexibilidade de entrada)
+                # ---------------------------------------------
 
-                if pandas.notna(row.get("ilustrador_resgate")):
-                    ilustracao.ilustrador_resgate = Ilustrador.objects.get(nome=row["ilustrador_resgate"])
+                # 1. Ilustrador criação (campo 'ilustrador')
+                valor_excel = row.get("ilustrador")
+                sigla_ilustrador = self._limpar_sigla_ilustrador(valor_excel)
+                if sigla_ilustrador:
+                    try:
+                        ilustracao.ilustrador = Ilustrador.objects.get(sigla=sigla_ilustrador)
+                    except Ilustrador.DoesNotExist:
+                        raise Exception(f"Ilustrador de criação com sigla '{sigla_ilustrador}' (valor original: '{valor_excel}') não encontrado.")
 
-                if pandas.notna(row.get("ilustrador_ajuste")):
-                    ilustracao.ilustrador_ajuste = Ilustrador.objects.get(nome=row["ilustrador_ajuste"])
+                # 2. Ilustrador resgate (campo 'ilustrador_resgate')
+                valor_excel = row.get("ilustrador_resgate")
+                sigla_resgate = self._limpar_sigla_ilustrador(valor_excel)
+                if sigla_resgate:
+                    try:
+                        ilustracao.ilustrador_resgate = Ilustrador.objects.get(sigla=sigla_resgate)
+                    except Ilustrador.DoesNotExist:
+                        raise Exception(f"Ilustrador de resgate com sigla '{sigla_resgate}' (valor original: '{valor_excel}') não encontrado.")
 
+                # 3. Ilustrador ajuste (campo 'ilustrador_ajuste')
+                valor_excel = row.get("ilustrador_ajuste")
+                sigla_ajuste = self._limpar_sigla_ilustrador(valor_excel)
+                if sigla_ajuste:
+                    try:
+                        ilustracao.ilustrador_ajuste = Ilustrador.objects.get(sigla=sigla_ajuste)
+                    except Ilustrador.DoesNotExist:
+                        raise Exception(f"Ilustrador de ajuste com sigla '{sigla_ajuste}' (valor original: '{valor_excel}') não encontrado.")
+
+                # 4. Crédito (mantido como está, buscando pelo nome)
                 if pandas.notna(row.get("credito")):
-                    ilustracao.credito = Credito.objects.get(nome=row["credito"])
+                    nome_credito = row["credito"]
+                    try:
+                        ilustracao.credito = Credito.objects.get(nome=nome_credito)
+                    except Credito.DoesNotExist:
+                        raise Exception(f"Crédito '{nome_credito}' não encontrado.")
 
                 ilustracao.save()
                 criados += 1

@@ -45,7 +45,7 @@ class Ilustrador(Base):
         verbose_name_plural = 'Ilustradores'
         ordering = ['nome']
     def __str__(self):
-        return self.nome
+        return f"{self.sigla} - {self.nome}"
 
 class Credito(Base):
     nome = models.CharField('Crédito', max_length=100, unique=True)
