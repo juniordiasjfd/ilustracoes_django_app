@@ -12,9 +12,11 @@ def boolean_to_icon(value):
     """
     if value:
         # Ícone de check verde (sucesso)
-        icon_html = '<span class="fa fa-check-circle text-success" title="Ativo">✅</span>'
+        # icon_html = '<span class="fa fa-check-circle text-success" title="Ativo">✅</span>'
+        icon_html = '<span class="fa fa-check-circle text-success" title="Ativo"></span>'
     else:
         # Ícone de X vermelho (perigo/erro)
-        icon_html = '<span class="fa fa-times-circle text-danger" title="Inativo">❌</span>'
+        # icon_html = '<span class="fa fa-times-circle text-danger" title="Inativo">❌</span>'
+        icon_html = '<span class="fa fa-times-circle text-danger" title="Inativo"></span>'
     # mark_safe é essencial para que o Django renderize o HTML e não o escape como texto puro
     return mark_safe(icon_html)
