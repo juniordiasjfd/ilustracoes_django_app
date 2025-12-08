@@ -79,6 +79,31 @@
         }
     
         /* Fim do bloco de estilos relevantes ao gutter */
+
+        /* 1. Aplica o estilo ao container pai que envolve o label e o input do filtro */
+        p:has(#id_lote_preenchido) {
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin: 0; 
+
+            /* NOVO: Adiciona um preenchimento à esquerda para afastar da borda da tela */
+            padding-left: 20px; 
+        }
+
+        /* 2. Ajuste fino para o checkbox (input) */
+        #id_lote_preenchido {
+            width: auto !important; 
+            flex-shrink: 0; 
+            margin-top: 0 !important; 
+        }
+
+        /* 3. Ajuste fino para o Label */
+        label[for="id_lote_preenchido"] {
+            white-space: nowrap; 
+            line-height: normal; 
+            margin-bottom: 5px; 
+        }
     </style>
     
     
@@ -345,111 +370,111 @@
                         <tbody>
                             {% for il in filter.qs %} 
                             <tr>
-                                <td class="fixed-column">{{ il.retranca|default:"" }}</td>
+                                <td title="Retranca" class="fixed-column">{{ il.retranca|default:"" }}</td>
                                 <td hidden>{{ il.pk }}</td>
                                 
                                 {% if preferencias_colunas.exibir_status %}
-                                <td>{{ il.get_status_display|default:"" }}</td>
+                                <td title="Status">{{ il.get_status_display|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_categoria %}
-                                <td>{{ il.get_categoria_display|default:"" }}</td>
+                                <td title="Categoria">{{ il.get_categoria_display|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_localizacao %}
-                                <td>{{ il.get_localizacao_display|default:"" }}</td>
+                                <td title="Localização">{{ il.get_localizacao_display|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_volume %}
-                                <td>{{ il.volume|default:"" }}</td>
+                                <td title="Volume">{{ il.volume|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_unidade %}
-                                <td>{{ il.unidade|default:"" }}</td>
+                                <td title="Unidade">{{ il.unidade|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_capitulo_secao %}
-                                <td>{{ il.capitulo_secao|default:"" }}</td>
+                                <td title="Capítulo ou seção">{{ il.capitulo_secao|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_pagina %}
-                                <td>{{ il.pagina|default:"" }}</td>
+                                <td title="Página">{{ il.pagina|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_tipo %}
-                                <td>{{ il.get_tipo_display|default:"" }}</td>
+                                <td title="Tipo">{{ il.get_tipo_display|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_descricao %}
-                                <td>{{ il.descricao|default:"" }}</td>
+                                <td title="Descrição">{{ il.descricao|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_observacao_edit_nuc %}
-                                <td>{{ il.observacao_edit_nuc|default:"" }}</td>
+                                <td title="Observação editorial e núcleo">{{ il.observacao_edit_nuc|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_lote %}
-                                <td>{{ il.lote|default:"" }}</td>
+                                <td title="Lote">{{ il.lote|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_data_liberacao_para_arte %}
-                                <td>{{ il.data_liberacao_para_arte | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de liberação do lote">{{ il.data_liberacao_para_arte | date:"d/m/Y"|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_data_envio_pedido %}
-                                <td>{{ il.data_envio_pedido | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de envio do pedido">{{ il.data_envio_pedido | date:"d/m/Y"|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_data_recebimento_rafe %}
-                                <td>{{ il.data_recebimento_rafe | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de recebimento do rafe">{{ il.data_recebimento_rafe | date:"d/m/Y"|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_data_retorno_rafe %}
-                                <td>{{ il.data_retorno_rafe | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de retorno do rafe">{{ il.data_retorno_rafe | date:"d/m/Y"|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_data_recebimento_finalizada %}
-                                <td>{{ il.data_recebimento_finalizada | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de recebimento da finalizada">{{ il.data_recebimento_finalizada | date:"d/m/Y"|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_classificacao %}
-                                <td>{{ il.classificacao|default:"" }}</td>
+                                <td title="Classificação">{{ il.classificacao|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_credito %}
-                                <td>{{ il.credito|default:"" }}</td>
+                                <td title="Crédito">{{ il.credito|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_ilustrador_resgate %}
-                                <td>{{ il.ilustrador_resgate|default:"" }}</td>
+                                <td title="Ilustrador resgate">{{ il.ilustrador_resgate|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_ilustrador %}
-                                <td>{{ il.ilustrador|default:"" }}</td>
+                                <td title="Ilustrador criação">{{ il.ilustrador|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_ilustrador_ajuste %}
-                                <td>{{ il.ilustrador_ajuste|default:"" }}</td>
+                                <td title="Ilustrador ajuste">{{ il.ilustrador_ajuste|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_observacao_arte %}
-                                <td>{{ il.observacao_arte|default:"" }}</td>
+                                <td title="Observação da arte">{{ il.observacao_arte|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_pagamento %}
-                                <td>{{ il.get_pagamento_display|default:"" }}</td>
+                                <td title="Pagamento">{{ il.get_pagamento_display|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_modificado_em %}
-                                <td>{{ il.modificado_em | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Modificada">{{ il.modificado_em | date:"d/m/Y"|default:"" }}</td>
                                 {% endif %}
 
                                 {% if preferencias_colunas.exibir_projeto %}
-                                <td>{{ il.projeto|default:"" }}</td>
+                                <td title="Projeto">{{ il.projeto|default:"" }}</td>
                                 {% endif %}
 
                                 {% if preferencias_colunas.exibir_componente %}
-                                <td>{{ il.componente|default:"" }}</td>
+                                <td title="Componente">{{ il.componente|default:"" }}</td>
                                 {% endif %}
 
                                 

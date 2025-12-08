@@ -81,6 +81,20 @@ class IlustracaoFilter(django_filters.FilterSet):
         widget=forms.NumberInput(attrs={'class': 'form-control'}),
         label='Lote'
     )
+    lote_preenchido = django_filters.BooleanFilter(
+        method='filter_lote_preenchido',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Lote preenchido'
+    )
+    def filter_lote_preenchido(self, queryset, name, value):
+        """Filtra apenas Ilustrações onde o campo lote NÃO é nulo."""
+        if value:
+            # value é True: filtrar lotes NÃO nulos
+            return queryset.exclude(lote__isnull=True)
+        # value é False (ou None/não selecionado): não aplicar filtro adicional
+        # Se você quiser filtrar APENAS lotes nulos quando False, altere a lógica.
+        # Por padrão, False ou não marcado não filtra.
+        return queryset
     class Meta:
         model = Ilustracao
         # Removemos fields pois definimos todos explicitamente acima
