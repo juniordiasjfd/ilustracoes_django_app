@@ -29,6 +29,7 @@ urlpatterns = [
     path('ilustracao/<int:pk>/deletar/', views.deletar_ilustracao, name='deletar_ilustracao'),
     path('ilustracao/<int:pk>/reativar/', views.reativar_ilustracao, name='reativar_ilustracao'),
     path('ilustras/upload/', views.UploadIlustracoesExcelView.as_view(), name='upload_ilustracoes_excel'),
+    path('ilustras/import/', views.ImportarIlustracoesView.as_view(), name='import_ilustracoes_excel'),
 
     path('componentes/', views.componentes, name='componentes'),
     path('novo-componente/', views.novo_componente, name='novo_componente'),

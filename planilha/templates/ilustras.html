@@ -279,7 +279,7 @@
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_data_liberacao_para_arte %}
-                                <th>Data de liberação para arte</th>
+                                <th>Data de liberação do lote</th>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_data_envio_pedido %}
@@ -329,6 +329,15 @@
                                 {% if preferencias_colunas.exibir_modificado_em %}
                                 <th>Modificada</th>
                                 {% endif %}
+
+                                {% if preferencias_colunas.exibir_projeto %}
+                                <th>Projeto</th>
+                                {% endif %}
+
+                                {% if preferencias_colunas.exibir_componente %}
+                                <th>Componente</th>
+                                {% endif %}
+
                                 
                                 <th>Ações</th>
                             </tr>
@@ -434,6 +443,15 @@
                                 {% if preferencias_colunas.exibir_modificado_em %}
                                 <td>{{ il.modificado_em | date:"d/m/Y"|default:"" }}</td>
                                 {% endif %}
+
+                                {% if preferencias_colunas.exibir_projeto %}
+                                <td>{{ il.projeto|default:"" }}</td>
+                                {% endif %}
+
+                                {% if preferencias_colunas.exibir_componente %}
+                                <td>{{ il.componente|default:"" }}</td>
+                                {% endif %}
+
                                 
                                 <td class="text-nowrap">
                                     <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info" target="_blank"

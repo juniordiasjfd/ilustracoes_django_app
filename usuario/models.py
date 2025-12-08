@@ -147,6 +147,8 @@ class PreferenciasColunasTabela(Base):
     exibir_observacao_arte = models.BooleanField('Observação da arte', default=True)
     exibir_pagamento = models.BooleanField('Pagamento', default=True)
     exibir_modificado_em = models.BooleanField('Modificada', default=True)
+    exibir_projeto = models.BooleanField('Projeto', default=True)
+    exibir_componente = models.BooleanField('Componente', default=True)
 
     class Meta:
         verbose_name = 'Preferência de colunas da tabela'

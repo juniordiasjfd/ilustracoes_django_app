@@ -17,7 +17,7 @@ import csv
 
 
 from .models import Projeto, Componente, Ilustracao, Ilustrador, Credito
-from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm, UploadExcelForm
+from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm, UploadExcelForm, UploadForCreateIlustracoesForm
 from .filter import IlustracaoFilter
 from usuario.models import PreferenciasPreFiltro, PreferenciasColunasTabela
 from django.views.generic.edit import FormView
@@ -662,6 +662,158 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
             # Se houver erro, retorna ao formulário com o contexto do erro
             return self.form_invalid(form)
 
+
+class ImportarIlustracoesView(LoginRequiredMixin, FormView):
+    template_name = "importar_ilustracoes.html"
+    form_class = UploadForCreateIlustracoesForm
+    success_url = reverse_lazy("import_ilustracoes_excel")
+
+    # -------------------------------
+    # MAPEAMENTO: verbose_name → field
+    # -------------------------------
+    MAP_COLUNAS = {
+        "Retranca": "retranca",
+        "Descrição": "descricao",
+        "Volume": "volume",
+        "Página": "pagina",
+        "Unidade": "unidade",
+        "Capítulo ou seção": "capitulo_secao",
+        "Observação editorial e núcleo": "observacao_edit_nuc",
+        "Lote": "lote",
+        "Data de liberação do lote": "data_liberacao_para_arte",
+        "Data de envio do pedido": "data_envio_pedido",
+        "Data de recebimento do rafe": "data_recebimento_rafe",
+        "Data de retorno do rafe": "data_retorno_rafe",
+        "Data de recebimento da finalizada": "data_recebimento_finalizada",
+        "Classificação": "classificacao",
+        "Observação arte": "observacao_arte",
+        "Status": "status",
+        "Categoria": "categoria",
+        "Localização": "localizacao",
+        "Tipo": "tipo",
+        "Pagamento": "pagamento",
+        "Ilustrador criação": "ilustrador",
+        "Ilustrador resgate": "ilustrador_resgate",
+        "Ilustrador ajuste": "ilustrador_ajuste",
+        "Crédito": "credito",
+        "Projeto": "projeto",
+        "Componente": "componente",
+    }
+
+    # ------------------------------------
+    # CAMPOS OBRIGATÓRIOS (do modelo)
+    # ------------------------------------
+    COLUNAS_OBRIGATORIAS = [
+        "Retranca",
+        "Descrição",
+        "Volume",
+        "Status",
+        "Categoria",
+        "Localização",
+        "Tipo",
+        "Projeto",
+        "Componente",
+    ]
+
+    def form_valid(self, form):
+        arquivo = form.cleaned_data["arquivo"]
+
+        try:
+            df = pandas.read_excel(arquivo)
+        except Exception as e:
+            messages.error(self.request, f"Erro ao ler o arquivo: {e}")
+            return self.form_invalid(form)
+
+        # Renomeia colunas com base no verbose_name
+        df = df.rename(columns={c: self.MAP_COLUNAS[c] for c in df.columns if c in self.MAP_COLUNAS})
+
+        # Verifica colunas obrigatórias
+        faltando = [col for col in self.COLUNAS_OBRIGATORIAS if col not in df.columns]
+
+        if faltando:
+            messages.error(
+                self.request,
+                f"Colunas obrigatórias ausentes no Excel: {', '.join(faltando)}"
+            )
+            return self.form_invalid(form)
+
+        criados = 0
+        erros = []
+
+        for index, row in df.iterrows():
+            try:
+                # Foreign keys obrigatórias
+                try:
+                    projeto = Projeto.objects.get(nome=row["projeto"])
+                except Projeto.DoesNotExist:
+                    raise Exception(f"Projeto '{row['projeto']}' não encontrado.")
+
+                try:
+                    componente = Componente.objects.get(nome=row["componente"])
+                except Componente.DoesNotExist:
+                    raise Exception(f"Componente '{row['componente']}' não encontrado.")
+
+                ilustracao = Ilustracao(
+                    retranca=row["retranca"],
+                    descricao=row["descricao"],
+                    volume=row["volume"],
+
+                    pagina=row.get("pagina"),
+                    unidade=row.get("unidade"),
+                    capitulo_secao=row.get("capitulo_secao"),
+                    observacao_edit_nuc=row.get("observacao_edit_nuc"),
+                    lote=row.get("lote"),
+                    data_liberacao_para_arte=row.get("data_liberacao_para_arte"),
+                    data_envio_pedido=row.get("data_envio_pedido"),
+                    data_recebimento_rafe=row.get("data_recebimento_rafe"),
+                    data_retorno_rafe=row.get("data_retorno_rafe"),
+                    data_recebimento_finalizada=row.get("data_recebimento_finalizada"),
+                    classificacao=row.get("classificacao"),
+                    observacao_arte=row.get("observacao_arte"),
+
+                    status=row["status"],
+                    categoria=row["categoria"],
+                    localizacao=row["localizacao"],
+                    tipo=row["tipo"],
+
+                    # pagamento opcional
+                    pagamento=row.get("pagamento"),
+
+                    projeto=projeto,
+                    componente=componente,
+                )
+
+                # FKs opcionais
+                if pandas.notna(row.get("ilustrador")):
+                    ilustracao.ilustrador = Ilustrador.objects.get(nome=row["ilustrador"])
+
+                if pandas.notna(row.get("ilustrador_resgate")):
+                    ilustracao.ilustrador_resgate = Ilustrador.objects.get(nome=row["ilustrador_resgate"])
+
+                if pandas.notna(row.get("ilustrador_ajuste")):
+                    ilustracao.ilustrador_ajuste = Ilustrador.objects.get(nome=row["ilustrador_ajuste"])
+
+                if pandas.notna(row.get("credito")):
+                    ilustracao.credito = Credito.objects.get(nome=row["credito"])
+
+                ilustracao.save()
+                criados += 1
+
+            except Exception as e:
+                erros.append(f"Linha {index+2}: {e}")
+
+        if criados:
+            messages.success(self.request, f"{criados} ilustrações importadas com sucesso!")
+
+        if erros:
+            messages.warning(
+                self.request,
+                "Algumas linhas não foram importadas:<br>" + "<br>".join(erros)
+            )
+
+        return super().form_valid(form)
+
+    
 
 class ExportarCreditosCSV(View):
     """

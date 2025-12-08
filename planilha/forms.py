@@ -300,3 +300,11 @@ class UploadExcelForm(forms.Form):
         help_text='Use a planilha exportada e altere apenas as colunas desejadas. Mantenha a coluna pk.',
         widget=forms.ClearableFileInput(attrs={'accept': '.xlsx'})
     )
+
+
+class UploadForCreateIlustracoesForm(forms.Form):
+    arquivo = forms.FileField(
+        label="Selecione o arquivo Excel",
+        required=True,
+        widget=forms.ClearableFileInput(attrs={'accept': '.xlsx,.xls'})
+    )
