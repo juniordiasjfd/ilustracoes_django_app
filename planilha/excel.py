@@ -1,10 +1,10 @@
 # ====================================================================
 # 1. CONFIGURAÇÃO MANDATÓRIA DO AMBIENTE DJANGO
 # ====================================================================
-import os
-import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ilustracoes.settings')
-django.setup()
+# import os
+# import django
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ilustracoes.settings')
+# django.setup()
 
 # ====================================================================
 # 2. IMPORTAÇÕES DE MODELOS
@@ -71,8 +71,76 @@ def get_foreign_key_values(model_name):
 
     return []
 
+def reordenar_colunas_para_excel(colunas_originais):
+    """
+    Reordena a lista de verbose_names do modelo Ilustracao para corresponder 
+    à ordem da tabela HTML e exclui os campos de metadados.
+    """
+    
+    # 1. Define a ORDEM DESEJADA conforme o template HTML (usando os verbose_names)
+    # Campos que devem aparecer primeiro e na ordem especificada.
+    ORDEM_TEMPLATE = [
+        'Retranca', 
+        'Status', 
+        'Categoria', 
+        'Localização', 
+        'Volume', 
+        'Unidade', 
+        'Capítulo ou seção', 
+        'Página', 
+        'Tipo', 
+        'Descrição', 
+        'Observação editorial e núcleo',
+        'Lote',
+        'Data de liberação do lote',
+        'Data de envio do pedido',
+        'Data de recebimento do rafe',
+        'Data de retorno do rafe',
+        'Data de recebimento da finalizada',
+        'Classificação', 
+        'Crédito', 
+        'Ilustrador resgate', 
+        'Ilustrador criação', 
+        'Ilustrador ajuste', 
+        'Observação arte',
+        'Pagamento',
+        'Projeto',
+        'Componente',
+    ]
+
+    # 2. Define os campos que devem ser EXCLUÍDOS (metadados e chaves)
+    CAMPOS_EXCLUIDOS = [
+        'ID', 
+        'Ativo', 
+        'Criado por',
+        'Criado em',
+        'Atualizado por',
+        'Modificado em',
+    ]
+
+    # 3. Converte a lista original em um conjunto (set) para busca rápida
+    colunas_originais_set = set(colunas_originais)
+    
+    colunas_reordenadas = []
+
+    # 4. Adiciona as colunas na ORDEM_TEMPLATE
+    for coluna_nome in ORDEM_TEMPLATE:
+        if coluna_nome in colunas_originais_set and coluna_nome not in CAMPOS_EXCLUIDOS:
+            colunas_reordenadas.append(coluna_nome)
+            
+    # Opcional: Adicionar quaisquer colunas restantes no final (caso alguma nova 
+    # coluna seja adicionada no modelo e não esteja no ORDEM_TEMPLATE)
+    colunas_ja_adicionadas = set(colunas_reordenadas)
+    
+    for coluna in colunas_originais:
+        if coluna not in colunas_ja_adicionadas and coluna not in CAMPOS_EXCLUIDOS:
+            colunas_reordenadas.append(coluna)
+            
+    return colunas_reordenadas
+
 def create_excel():
-    COLUNAS_ILUSTRACAO = get_verbose_names(Ilustracao)
+    COLUNAS_ILUSTRACAO0 = get_verbose_names(Ilustracao)
+    COLUNAS_ILUSTRACAO = reordenar_colunas_para_excel(COLUNAS_ILUSTRACAO0)
 
     # ====================================================================
     # 4. CONFIGURAÇÃO E GERAÇÃO DO EXCEL
