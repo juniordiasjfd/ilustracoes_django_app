@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
 from usuario import views
 
@@ -22,4 +22,30 @@ urlpatterns = [
     path('gerenciar-usuarios/todos/', views.UsuarioListarTodosView.as_view(), name='gerenciar_usuarios_todos'),
 
     path('preferencias/colunas/', views.PreferenciasColunasUpdateView.as_view(), name='editar_preferencias_colunas'),
+
+
+
+    # 1. Solicita o E-mail (envia o link)
+    path('resetar-senha/', auth_views.PasswordResetView.as_view(
+        template_name='usuario/recuperacao_senha/password_reset_form.html',
+        email_template_name='usuario/recuperacao_senha/password_reset_email.html',
+        subject_template_name='usuario/recuperacao_senha/password_reset_subject.txt',
+        success_url=reverse_lazy('password_reset_done')
+    ), name='password_reset'),
+    
+    # 2. Informa que o e-mail foi enviado
+    path('resetar-senha/enviado/', auth_views.PasswordResetDoneView.as_view(
+        template_name='usuario/recuperacao_senha/password_reset_done.html'
+    ), name='password_reset_done'),
+    
+    # 3. Link de redefinição (Valida o token e mostra o formulário de nova senha)
+    path('resetar-senha/confirmar/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='usuario/recuperacao_senha/password_reset_confirm.html',
+        success_url=reverse_lazy('password_reset_complete')
+    ), name='password_reset_confirm'),
+
+    # 4. Confirmação de que a senha foi alterada
+    path('resetar-senha/completo/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='usuario/recuperacao_senha/password_reset_complete.html'
+    ), name='password_reset_complete'),
 ]

@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
+from django.contrib.auth import views as auth_views
 
 
 from .models import PreferenciasPreFiltro, PreenchimentoAutomaticoDeCampos, PreferenciasColunasTabela

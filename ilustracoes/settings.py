@@ -145,14 +145,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'xxxxxx'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'xxxxxx'
-EMAIL_HOST_PASSWORD = 'xxxxxxx'
-DEFAULT_FROM_EMAIL = 'junior.dias@scriba.com.br'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_HOST = 'xxxxxx'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'xxxxxx'
+# EMAIL_HOST_PASSWORD = 'xxxxxxx'
+# DEFAULT_FROM_EMAIL = 'junior.dias@scriba.com.br'
 # https://www.youtube.com/watch?v=lVbozsNX9ow
 
 
