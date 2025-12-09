@@ -12,7 +12,7 @@ django.setup()
 import pandas
 from planilha.models import Ilustracao, Ilustrador, Credito, Projeto, Componente
 
-def obter_verbose_names(model_class):
+def get_verbose_names(model_class):
     """Retorna uma lista de verbose_names para os campos do modelo."""
     verbose_names = []
     # O atributo '_meta' contém metadados do modelo
@@ -22,7 +22,7 @@ def obter_verbose_names(model_class):
     return verbose_names
 
 
-obter_verbose_names(Ilustracao)
+get_verbose_names(Ilustracao)
 
 
 

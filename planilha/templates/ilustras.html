@@ -354,8 +354,20 @@
                                 <th>Pagamento</th>
                                 {% endif %}
                                 
+                                {% if preferencias_colunas.exibir_criado_por %}
+                                <th>Criado por</th>
+                                {% endif %}
+
+                                {% if preferencias_colunas.exibir_criado_em %}
+                                <th>Criado em</th>
+                                {% endif %}
+
+                                {% if preferencias_colunas.exibir_atualizado_por %}
+                                <th>Modificado por</th>
+                                {% endif %}
+
                                 {% if preferencias_colunas.exibir_modificado_em %}
-                                <th>Modificada</th>
+                                <th>Modificado em</th>
                                 {% endif %}
 
                                 {% if preferencias_colunas.exibir_projeto %}
@@ -467,9 +479,21 @@
                                 {% if preferencias_colunas.exibir_pagamento %}
                                 <td title="Pagamento">{{ il.get_pagamento_display|default:"" }}</td>
                                 {% endif %}
+
+                                {% if preferencias_colunas.exibir_criado_por %}
+                                <td title="Criado por">{{ il.criado_por | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
+
+                                {% if preferencias_colunas.exibir_criado_em %}
+                                <td title="Criado em">{{ il.criado_em | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
                                 
+                                {% if preferencias_colunas.exibir_atualizado_por %}
+                                <td title="Modificado por">{{ il.atualizado_por | date:"d/m/Y"|default:"" }}</td>
+                                {% endif %}
+
                                 {% if preferencias_colunas.exibir_modificado_em %}
-                                <td title="Modificada">{{ il.modificado_em | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Modificado em">{{ il.modificado_em | date:"d/m/Y"|default:"" }}</td>
                                 {% endif %}
 
                                 {% if preferencias_colunas.exibir_projeto %}

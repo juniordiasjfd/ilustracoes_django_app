@@ -146,7 +146,10 @@ class PreferenciasColunasTabela(Base):
     exibir_ilustrador_ajuste = models.BooleanField('Ilustrador ajuste', default=True)
     exibir_observacao_arte = models.BooleanField('Observação da arte', default=True)
     exibir_pagamento = models.BooleanField('Pagamento', default=True)
-    exibir_modificado_em = models.BooleanField('Modificada', default=True)
+    exibir_criado_por = models.BooleanField('Criado por', default=True)
+    exibir_criado_em = models.BooleanField('Criado em', default=True)
+    exibir_atualizado_por = models.BooleanField('Modificado por', default=True)
+    exibir_modificado_em = models.BooleanField('Modificado em', default=True)
     exibir_projeto = models.BooleanField('Projeto', default=True)
     exibir_componente = models.BooleanField('Componente', default=True)
 

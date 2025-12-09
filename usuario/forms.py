@@ -120,6 +120,9 @@ class PreferenciasColunasTabelaForm(forms.ModelForm):
             'exibir_ilustrador_ajuste',
             'exibir_observacao_arte',
             'exibir_pagamento',
+            'exibir_criado_por',
+            'exibir_criado_em',
+            'exibir_atualizado_por',
             'exibir_modificado_em',
             'exibir_projeto',
             'exibir_componente'
