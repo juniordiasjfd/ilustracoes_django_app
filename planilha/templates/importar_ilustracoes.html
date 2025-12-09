@@ -11,6 +11,12 @@
 {% block conteudo %}
 <h2>Importar novas ilustrações via Excel</h2>
 
+{# --- BOTÃO DE DOWNLOAD DO TEMPLATE --- #}
+<a href="{% url 'download_template' %}" class="btn btn-success mb-3" target="_blank">
+    <i class="fas fa-download"></i> Baixar Template Excel
+</a>
+{# -------------------------------------- #}
+
 
 {# Bloco para exibir mensagens do Django #}
 {% if messages %}

@@ -21,6 +21,8 @@ from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, I
 from .filter import IlustracaoFilter
 from usuario.models import PreferenciasPreFiltro, PreferenciasColunasTabela
 from django.views.generic.edit import FormView
+from .excel import create_excel
+from io import BytesIO
 
 
 def to_data_aware(date_naive):
@@ -916,6 +918,38 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
 
         return super().form_valid(form)
 
+class DownloadTemplateDeImportarIlustracaoView(View):
+    """
+    View baseada em Classe (CBV) para gerar e servir o arquivo Excel 
+    com validação de dados para download.
+    """
+    def get(self, request, *args, **kwargs):
+        # 1. Obter o Workbook (chamando sua função)
+        workbook = create_excel()
+        
+        # 2. Configurar o buffer de memória (BytesIO)
+        output = BytesIO()
+        workbook.save(output)
+        output.seek(0) # Retorna ao início do buffer
+        
+        # 3. Configurar a Resposta HTTP
+        
+        # Define o tipo MIME padrão para arquivos .xlsx
+        response = HttpResponse(
+            output.read(), 
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        
+        # 4. Configurar os cabeçalhos para download
+        
+        data_formatada = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"template_ilustracao_vazio_{data_formatada}.xlsx"
+        
+        # O cabeçalho 'Content-Disposition' informa ao navegador que é um anexo
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        return response
+
     
 
 class ExportarCreditosCSV(View):
@@ -969,3 +1003,4 @@ class ExportarCreditosCSV(View):
             ])
 
         return response
+
