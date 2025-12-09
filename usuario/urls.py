@@ -18,6 +18,7 @@ urlpatterns = [
     path('preferencias/preenchimento-default/salvar/', views.PreenchimentoAutomaticoDeCamposSalvar.as_view(), name='preenchimento_automatico_salvar'),
     path('preferencias/preenchimento-default/atualizar/<int:pk>/', views.PreenchimentoAutomaticoDeCamposAtualizar.as_view(), name='preenchimento_automatico_atualizar'),
     path('registrar/', views.UsuarioCreate.as_view(), name='registrar'),
+    path('registrar/done/', views.UsuarioCreateDone.as_view(), name='registrar_done'),
     path('gerenciar-usuarios/<int:pk>/', views.UsuarioUpdateView.as_view(), name='gerenciar_usuario'),
     path('gerenciar-usuarios/todos/', views.UsuarioListarTodosView.as_view(), name='gerenciar_usuarios_todos'),
 

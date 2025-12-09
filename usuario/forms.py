@@ -62,6 +62,24 @@ class UsuarioModelForm(UserCreationForm):
         email_digitado = self.cleaned_data['email']
         if User.objects.filter(email=email_digitado).exists():
             raise ValidationError('Esse e-mail já está em uso.')
+        return email_digitado
+    
+    def save(self, commit=True):
+        # Chama o save() do UserCreationForm, que cria a instância do User 
+        # (salvando username e passwords).
+        user = super().save(commit=False) 
+        
+        # 1. Obtém o email do formulário e define na instância do usuário.
+        #    O campo email existe em self.cleaned_data, mas não foi passado
+        #    para o save() do UserCreationForm.
+        user.email = self.cleaned_data["email"]
+        
+        # 2. Se 'commit' for True (padrão), salva as alterações no banco.
+        if commit:
+            user.save()
+        
+        # 3. Retorna a instância do usuário.
+        return user
 
     class Meta:
         model = User

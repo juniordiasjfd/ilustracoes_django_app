@@ -180,7 +180,7 @@ class PreenchimentoAutomaticoDeCamposAtualizar(LoginRequiredMixin, UpdateView):
 class UsuarioCreate(CreateView):
     template_name = 'usuario/usuario_registro.html'
     form_class = UsuarioModelForm
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('registrar_done')
 
     def form_valid(self, form):
         grupo = get_object_or_404(Group, name='Comum')
@@ -189,6 +189,10 @@ class UsuarioCreate(CreateView):
         self.object.is_active = False
         self.object.save()
         return url
+
+class UsuarioCreateDone(TemplateView):
+    template_name = 'usuario/usuario_registro_done.html'
+
 
 class PreferenciasColunasUpdateView(LoginRequiredMixin, UpdateView):
     model = PreferenciasColunasTabela
