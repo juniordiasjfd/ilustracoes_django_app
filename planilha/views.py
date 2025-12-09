@@ -92,36 +92,6 @@ def ilustras(request):
 
     queryset_filtrado, pre_filtro_ativo = aplicar_pre_filtro_ilustras(request, queryset_base)
 
-    # # 2. Lógica do Pré-Filtro
-    # pre_filtro_ativo = False
-    # try:
-    #     # Tenta buscar as preferências do usuário logado
-    #     preferencias = PreferenciasPreFiltro.objects.get(usuario=request.user)
-    #     # Inicia um filtro vazio
-    #     filtro_q = Q()
-    #     # Aplica filtros se os campos estiverem preenchidos nas preferências
-    #     #### Filtro por PROJETOS (ManyToMany)
-    #     projetos_ids = preferencias.projetos.values_list('id', flat=True)
-    #     if projetos_ids:
-    #         filtro_q &= Q(projeto__id__in=projetos_ids)
-    #     #### Filtro por COMPONENTES (ManyToMany)
-    #     componentes_ids = preferencias.componentes.values_list('id', flat=True)
-    #     if componentes_ids:
-    #         filtro_q &= Q(componente__id__in=componentes_ids)
-    #     #### Filtro por VOLUME (PositiveIntegerField)
-    #     if preferencias.volume is not None:
-    #         # Note: O campo `volume` no modelo Ilustracao é IntegerField. 
-    #         # Assumindo que você quer uma correspondência exata.
-    #         filtro_q &= Q(volume=preferencias.volume)
-    #     if preferencias.projetos.exists() or preferencias.componentes.exists() or preferencias.volume is not None:
-    #         pre_filtro_ativo = True
-    #     # Aplica o filtro Q ao queryset base
-    #     # Se filtro_q estiver vazio (nenhuma preferência salva), aplica um filtro nulo (Q())
-    #     # que não altera o queryset.
-    #     queryset_filtrado = queryset_base.filter(filtro_q)
-    # except PreferenciasPreFiltro.DoesNotExist:
-    #     # Se o usuário não tem preferências salvas, usa o queryset base completo
-    #     queryset_filtrado = queryset_base
     ###############################################
     try:
         preferencias_colunas = PreferenciasColunasTabela.objects.get(usuario=request.user)
@@ -145,47 +115,43 @@ def ilustras(request):
 @login_required
 def ilustras_excluidas(request):
     ###############################################
-    # adicionando filtro com as preferências do usuário
-    # 1. Queryset Base: Apenas ilustrações ativas
+    # 1. Queryset Base: Apenas ilustrações excluídas
     queryset_base = Ilustracao.objects.filter(ativo=False)
-    # 2. Lógica do Pré-Filtro
-    pre_filtro_ativo = False
+    
     try:
-        # Tenta buscar as preferências do usuário logado
-        preferencias = PreferenciasPreFiltro.objects.get(usuario=request.user)
-        # Inicia um filtro vazio
-        filtro_q = Q()
-        # Aplica filtros se os campos estiverem preenchidos nas preferências
-        #### Filtro por PROJETOS (ManyToMany)
-        projetos_ids = preferencias.projetos.values_list('id', flat=True)
-        if projetos_ids:
-            filtro_q &= Q(projeto__id__in=projetos_ids)
-        #### Filtro por COMPONENTES (ManyToMany)
-        componentes_ids = preferencias.componentes.values_list('id', flat=True)
-        if componentes_ids:
-            filtro_q &= Q(componente__id__in=componentes_ids)
-        #### Filtro por VOLUME (PositiveIntegerField)
-        if preferencias.volume is not None:
-            # Assumindo que você quer uma correspondência exata.
-            filtro_q &= Q(volume=preferencias.volume)
-        if preferencias.projetos.exists() or preferencias.componentes.exists() or preferencias.volume is not None:
-            pre_filtro_ativo = True
-        # Aplica o filtro Q ao queryset base
-        # Se filtro_q estiver vazio (nenhuma preferência salva), aplica um filtro nulo (Q())
-        # que não altera o queryset.
-        queryset_filtrado = queryset_base.filter(filtro_q)
-    except PreferenciasPreFiltro.DoesNotExist:
-        # Se o usuário não tem preferências salvas, usa o queryset base completo
-        queryset_filtrado = queryset_base
+        num_linhas_total = queryset_base.count()
+    except Exception:
+        num_linhas_total = 0
+    
+    # 2. Aplica o Pré-Filtro
+    # Usa a função auxiliar para filtrar o queryset base de ilustrações excluídas
+    # baseando-se nas preferências do usuário (Projeto, Componente, Volume).
+    # Esta função retorna o queryset filtrado e um booleano indicando se o filtro foi aplicado.
+    queryset_filtrado, pre_filtro_ativo = aplicar_pre_filtro_ilustras(request, queryset_base)
+    
     ###############################################
-    # filter = IlustracaoFilter(request.GET, queryset=Ilustracao.objects.filter(ativo=False))
-    filter = IlustracaoFilter(request.GET, queryset=queryset_filtrado)
+    
+    # 3. Adiciona as Preferências de Coluna (Corrigido da resposta anterior)
+    try:
+        preferencias_colunas = PreferenciasColunasTabela.objects.get(usuario=request.user)
+    except PreferenciasColunasTabela.DoesNotExist:
+        # Fallback seguro para que o template não quebre se o objeto de preferências não existir
+        preferencias_colunas = PreferenciasColunasTabela()
+    
+    ###############################################
+    
+    # 4. Aplica o Filtro Principal (Django-Filter) e Ordena
+    queryset_ordenado = queryset_filtrado.order_by('-lote')
+    filter = IlustracaoFilter(request.GET, queryset=queryset_ordenado)
     num_linhas = filter.qs.count()
+    
     context = {
         'ativo': False,
         'filter': filter,
         'num_linhas': num_linhas,
+        'num_linhas_total': num_linhas_total,
         'pre_filtro_ativo': pre_filtro_ativo,
+        'preferencias_colunas': preferencias_colunas,
     }
     return render(request, 'ilustras.html', context)
 @login_required
