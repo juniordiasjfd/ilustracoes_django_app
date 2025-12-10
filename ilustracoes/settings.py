@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import dj_database_url
 from pathlib import Path
 import os
 
@@ -101,7 +101,7 @@ DATABASES = {
         'PORT': '5432',                      # A porta padrão do PostgreSQL
     }
 }
-
+DATABASES['default'] = dj_database_url.parse('postgresql://geri_database_user:GocSaXhaZuCt107BEn8DLHUFRIsWiwnJ@dpg-d4slts0gjchc738p1qsg-a.oregon-postgres.render.com/geri_database')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
