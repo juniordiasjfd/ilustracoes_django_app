@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import dj_database_url
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(@u#xv#!jkc9)l@sv%%pe^9i@)eb=sldov30x63k+=)*gpr*k8'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -91,7 +92,7 @@ WSGI_APPLICATION = 'ilustracoes.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-DATABASES = {
+DATABASES = { # database de teste
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'geri_db',        # O nome que você criou
@@ -101,7 +102,7 @@ DATABASES = {
         'PORT': '5432',                      # A porta padrão do PostgreSQL
     }
 }
-DATABASES['default'] = dj_database_url.parse('postgresql://geri_database_user:GocSaXhaZuCt107BEn8DLHUFRIsWiwnJ@dpg-d4slts0gjchc738p1qsg-a.oregon-postgres.render.com/geri_database')
+DATABASES['default'] = dj_database_url.parse(config('DATABASES_URL'))
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -146,12 +147,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = '172.16.12.4'
-EMAIL_PORT = 25
-# EMAIL_USE_TLS = False
-# EMAIL_HOST_USER = r'ensinolivre\junior.dias'
-# EMAIL_HOST_PASSWORD = 'minha senha'
-DEFAULT_FROM_EMAIL = 'junior.dias@scriba.com.br'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 
 # configurações de autenticação
