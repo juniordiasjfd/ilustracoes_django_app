@@ -13,9 +13,11 @@ django-crispy-forms==2.5
 django-filter==25.2
 django-select2==8.4.3
 et_xmlfile==2.0.0
+gunicorn==23.0.0
 idna==3.11
 numpy==2.3.4
 openpyxl==3.1.5
+packaging==25.0
 pandas==2.3.3
 psycopg2-binary==2.9.11
 python-dateutil==2.9.0.post0

@@ -103,7 +103,8 @@ DATABASES = { # database de teste
         'PORT': '5432',                      # A porta padrão do PostgreSQL
     }
 }
-DATABASES['default'] = dj_database_url.parse(config('DATABASES_URL'))
+if DEBUG == False:
+    DATABASES['default'] = dj_database_url.parse(config('DATABASES_URL'))
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
