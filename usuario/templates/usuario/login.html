@@ -27,15 +27,23 @@
                     {% csrf_token %}
                     {{ form|crispy }}
                     <div class="d-flex justify-content-between align-items-center mt-3">
-                        <button type="submit" class="btn btn-light">Autenticar</button>
+                        <button type="submit" class="btn btn-outline-primary">Autenticar</button>
                         <a href="{% url 'password_reset' %}" class="btn btn-link">Esqueci minha senha</a>
                     </div>
                 </form>
                 <hr>
-                <p>Caso você já tenha se registrado e não esteja conseguindo fazer login, entre em contato com:</p>
+                <p>Caso você ainda não tenha acesso,</p>
+                <p>
+                    <a href="{% url 'registrar' %}" class="btn btn-success my-2 my-sm-0">
+                        Registre-se
+                    </a>
+                </p>
+                
+                <p>Se você já se registrou e não está conseguindo fazer login, entre em contato com:</p>
                 <ul>
-                    <li><a href="mailto:mariana.diamante@scriba.com.br">mariana.diamante@scriba.com.br</a></li>
-                    <li><a href="mailto:junior.dias@scriba.com.br">junior.dias@scriba.com.br</a></li>
+                    <li><a href="mailto:mariana.diamante@scriba.com.br">mariana.diamante@scriba.com.br</a>, ou</li>
+                    <li><a href="mailto:brunna.caciolato@scriba.com.br">brunna.caciolato@scriba.com.br</a>, ou</li>
+                    <li><a href="mailto:junior.dias@scriba.com.br">junior.dias@scriba.com.br</a>.</li>
                 </ul>
 
                 {% endif %}
