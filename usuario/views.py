@@ -8,10 +8,12 @@ from braces.views import GroupRequiredMixin
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
+from django.core.mail import send_mail
 
 
 from .models import PreferenciasPreFiltro, PreenchimentoAutomaticoDeCampos, PreferenciasColunasTabela
 from .forms import PreferenciasPreFiltroModelForm, PreenchimentoAutomaticoDeCamposModelForm, UsuarioModelForm, UsuarioActivateDeactivateForm, PreferenciasColunasTabelaForm
+from ilustracoes.settings import DEFAULT_FROM_EMAIL, RECIPIENT_LIST
 
 
 
@@ -188,6 +190,13 @@ class UsuarioCreate(CreateView):
         self.object.groups.add(grupo)
         self.object.is_active = False
         self.object.save()
+        send_mail(
+            'Geri | Novo usuário registrado',
+            f'O usuário {self.object.username} ({self.object.email}) se cadastrou e aguarda aprovação.',
+            DEFAULT_FROM_EMAIL,
+            RECIPIENT_LIST,
+            fail_silently=True,
+        )
         return url
 
 class UsuarioCreateDone(TemplateView):
