@@ -192,7 +192,7 @@ class UsuarioCreate(CreateView):
         self.object.save()
         send_mail(
             'Geri | Novo usuário registrado',
-            f'O usuário {self.object.username} ({self.object.email}) se cadastrou e aguarda aprovação.',
+            f'O usuário {self.object.username} ({self.object.email}) se cadastrou e aguarda aprovação.\n\nAcesse https://www.geri.scriba.com.br/gerenciar-usuarios/todos/ para gerenciar os usuários.',
             DEFAULT_FROM_EMAIL,
             RECIPIENT_LIST,
             fail_silently=True,
