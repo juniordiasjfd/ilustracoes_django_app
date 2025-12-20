@@ -53,14 +53,14 @@ class Credito(Base):
         'Projeto', 
         verbose_name='Projetos associados',
         related_name='creditos_projetos_associados', 
-        null=True,
+        # null=True,
         blank=True,
     )
     componentes = models.ManyToManyField(
         'Componente',
         verbose_name='Componentes associados',
         related_name='creditos_componentes_associados',
-        null=True,
+        # null=True,
         blank=True,
     )
     class Meta:

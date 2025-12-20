@@ -67,8 +67,8 @@
                     <td>{{ object.nome }}</td>
                     <td>{{ object.sigla }}</td>
                     <!-- <td>{{ object.credito }}</td> -->
-                    <td>{{ object.email }}</td>
-                    <td>{{ object.telefone }}</td>
+                    <td>{{ object.email|default:"" }}</td>
+                    <td>{{ object.telefone|default:"" }}</td>
                     <td>{{ object.criado_em|date:"d/m/Y" }}</td>
                     <td>{{ object.modificado_em|date:"d/m/Y" }}</td>
                     <td>{{ object.ativo|boolean_to_icon }}</td>
