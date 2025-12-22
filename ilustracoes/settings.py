@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'ilustracoes.wsgi.application'
 DATABASES = { # database de teste
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'geri_db',        # O nome que você criou
+        'NAME': 'geridatabase',        # O nome que você criou
         'USER': 'django_app_user',           # O usuário que você criou
         'PASSWORD': 'Scriba123',     # A senha desse usuário
         'HOST': 'localhost',                 # O servidor é seu próprio computador
