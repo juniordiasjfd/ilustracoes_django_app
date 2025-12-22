@@ -51,8 +51,8 @@
             <thead>
                 <tr>
                     <th>Crédito</th>
-                    <th>Projetos</th>
-                    <th>Componentes</th>
+                    <!-- <th>Projetos</th> -->
+                    <!-- <th>Componentes</th> -->
                     <th>Criado em</th>
                     <th>Modificado em</th>
                     <th>Ativo</th>
@@ -64,8 +64,8 @@
 
                 <tr>
                     <td>{{ object.nome }}</td>
-                    <td>{{ object.projetos.all | join:"; " }}</td>
-                    <td>{{ object.componentes.all | join:"; " }}</td>
+                    <!-- <td>{{ object.projetos.all | join:"; " }}</td> -->
+                    <!-- <td>{{ object.componentes.all | join:"; " }}</td> -->
                     <td>{{ object.criado_em|date:"d/m/Y" }}</td>
                     <td>{{ object.modificado_em|date:"d/m/Y" }}</td>
                     <td>{{ object.ativo|boolean_to_icon }}</td>
