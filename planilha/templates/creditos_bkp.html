@@ -51,6 +51,8 @@
             <thead>
                 <tr>
                     <th>Crédito</th>
+                    <!-- <th>Projetos</th> -->
+                    <!-- <th>Componentes</th> -->
                     <th>Criado em</th>
                     <th>Modificado em</th>
                     <th>Ativo</th>
@@ -62,6 +64,8 @@
 
                 <tr>
                     <td>{{ object.nome }}</td>
+                    <!-- <td>{{ object.projetos.all | join:"; " }}</td> -->
+                    <!-- <td>{{ object.componentes.all | join:"; " }}</td> -->
                     <td>{{ object.criado_em|date:"d/m/Y" }}</td>
                     <td>{{ object.modificado_em|date:"d/m/Y" }}</td>
                     <td>{{ object.ativo|boolean_to_icon }}</td>
@@ -71,6 +75,22 @@
                             <i class="fas fa-edit"></i> Editar
                         </a>
 
+                        <!-- {% if object.ativo == True %}
+                        <form action="{% url 'deletar_credito' object.pk %}" method="post" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('ATENÇÃO: Você tem certeza que deseja DESATIVAR este crédito?');">
+                                Desativar
+                            </button>
+                        </form>
+                        {% else %}
+                        <form action="{% url 'reativar_credito' object.pk %}" method="post" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">
+                                Reativar
+                            </button>
+                        </form>
+                        {% endif %} -->
                     </td>
                 </tr>
 
