@@ -51,6 +51,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Sigla</th>
+                    <!-- <th>Crédito</th> -->
                     <th>E-mail</th>
                     <th>Telefone</th>
                     <th>Criado em</th>
@@ -65,6 +66,7 @@
                 <tr>
                     <td>{{ object.nome }}</td>
                     <td>{{ object.sigla }}</td>
+                    <!-- <td>{{ object.credito }}</td> -->
                     <td>{{ object.email|default:"" }}</td>
                     <td>{{ object.telefone|default:"" }}</td>
                     <td>{{ object.criado_em|date:"d/m/Y" }}</td>
@@ -76,7 +78,22 @@
                             <i class="fas fa-edit"></i> Editar
                         </a>
 
-                        
+                        {% if object.ativo == True %}
+                        <form action="{% url 'deletar_ilustrador' object.pk %}" method="post" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('ATENÇÃO: Você tem certeza que deseja DESATIVAR este ilustrador?');">
+                                Desativar
+                            </button>
+                        </form>
+                        {% else %}
+                        <form action="{% url 'reativar_ilustrador' object.pk %}" method="post" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">
+                                Reativar
+                            </button>
+                        </form>
+                        {% endif %}
                     </td>
                 </tr>
 
