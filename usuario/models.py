@@ -141,7 +141,7 @@ class PreferenciasColunasTabela(Base):
     exibir_data_recebimento_finalizada = models.BooleanField('Data de recebimento da finalizada', default=True)
     exibir_classificacao = models.BooleanField('Classificação', default=True)
     exibir_credito = models.BooleanField('Crédito', default=True)
-    exibir_ilustrador_resgate = models.BooleanField('Ilustrador resgate', default=True)
+    # exibir_ilustrador_resgate = models.BooleanField('Ilustrador resgate', default=True)
     exibir_ilustrador = models.BooleanField('Ilustrador criação', default=True)
     exibir_ilustrador_ajuste = models.BooleanField('Ilustrador ajuste', default=True)
     exibir_observacao_arte = models.BooleanField('Observação da arte', default=True)

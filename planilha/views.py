@@ -659,7 +659,7 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
         "Data de recebimento da finalizada": "data_recebimento_finalizada",
         "Classificação": "classificacao",
         "Crédito": "credito",
-        "Ilustrador resgate": "ilustrador_resgate",
+        # "Ilustrador resgate": "ilustrador_resgate",
         "Ilustrador criação": "ilustrador",
         "Ilustrador ajuste": "ilustrador_ajuste",
         "Observação da arte": "observacao_arte",
@@ -842,13 +842,13 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
                         raise Exception(f"Ilustrador de criação com sigla '{sigla_ilustrador}' (valor original: '{valor_excel}') não encontrado.")
 
                 # 2. Ilustrador resgate (campo 'ilustrador_resgate')
-                valor_excel = row.get("ilustrador_resgate")
-                sigla_resgate = self._limpar_sigla_ilustrador(valor_excel)
-                if sigla_resgate:
-                    try:
-                        ilustracao.ilustrador_resgate = Ilustrador.objects.get(sigla=sigla_resgate)
-                    except Ilustrador.DoesNotExist:
-                        raise Exception(f"Ilustrador de resgate com sigla '{sigla_resgate}' (valor original: '{valor_excel}') não encontrado.")
+                # valor_excel = row.get("ilustrador_resgate")
+                # sigla_resgate = self._limpar_sigla_ilustrador(valor_excel)
+                # if sigla_resgate:
+                #     try:
+                #         ilustracao.ilustrador_resgate = Ilustrador.objects.get(sigla=sigla_resgate)
+                #     except Ilustrador.DoesNotExist:
+                #         raise Exception(f"Ilustrador de resgate com sigla '{sigla_resgate}' (valor original: '{valor_excel}') não encontrado.")
 
                 # 3. Ilustrador ajuste (campo 'ilustrador_ajuste')
                 valor_excel = row.get("ilustrador_ajuste")

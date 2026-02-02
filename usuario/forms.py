@@ -133,7 +133,7 @@ class PreferenciasColunasTabelaForm(forms.ModelForm):
             'exibir_data_recebimento_finalizada',
             'exibir_classificacao',
             'exibir_credito',
-            'exibir_ilustrador_resgate',
+            # 'exibir_ilustrador_resgate',
             'exibir_ilustrador',
             'exibir_ilustrador_ajuste',
             'exibir_observacao_arte',

@@ -94,7 +94,7 @@ def load_ilustracoes(dados):
             nova_il.capitulo_secao = dados.iloc[i]['capitulo_secao']
             nova_il.tipo = dados.iloc[i]['tipo']
             nova_il.descricao = dados.iloc[i]['descricao']
-            nova_il.ilustrador_resgate = get_artista(dados.iloc[i]['ilustrador_resgate'])
+            # nova_il.ilustrador_resgate = get_artista(dados.iloc[i]['ilustrador_resgate'])
             nova_il.observacao_edit_nuc = dados.iloc[i]['observacao_edit_nuc']
             nova_il.lote = get_none(dados.iloc[i]['lote'])
             nova_il.data_liberacao_para_arte = clean_date_value(dados.iloc[i]['data_liberacao_para_arte'])

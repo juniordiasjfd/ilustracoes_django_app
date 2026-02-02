@@ -103,6 +103,7 @@ class Ilustracao(Base):
         PAG_ESPECIAL = 'PÁG ESPECIAL', 'PAG ESPECIAL'
         MP_G = 'MP-G', 'MP-G'
         MP_E = 'MP-E', 'MP-E'
+        OED = 'OED', 'OED'
     class TipoChoices(models.TextChoices):
         AJUSTE = 'AJUSTE', 'AJUSTE'
         NOVA = 'NOVA', 'NOVA'
@@ -179,14 +180,14 @@ class Ilustracao(Base):
         blank=True,  # Permite que o campo não seja obrigatório no formulário
         related_name='ilustracoes_criadas'  # Nome para consultas reversas
     )
-    ilustrador_resgate = models.ForeignKey(
-        'Ilustrador',  # Aponta para o modelo Ilustrador que criamos
-        verbose_name='Ilustrador resgate',
-        on_delete=models.SET_NULL,  # Se o Ilustrador for deletado, o campo fica NULL
-        null=True,  # Permite que o campo seja NULL no banco de dados
-        blank=True,  # Permite que o campo não seja obrigatório no formulário
-        related_name='ilustracoes_resgatadas'  # Nome para consultas reversas
-    )
+    # ilustrador_resgate = models.ForeignKey(
+    #     'Ilustrador',  # Aponta para o modelo Ilustrador que criamos
+    #     verbose_name='Ilustrador resgate',
+    #     on_delete=models.SET_NULL,  # Se o Ilustrador for deletado, o campo fica NULL
+    #     null=True,  # Permite que o campo seja NULL no banco de dados
+    #     blank=True,  # Permite que o campo não seja obrigatório no formulário
+    #     related_name='ilustracoes_resgatadas'  # Nome para consultas reversas
+    # )
     ilustrador_ajuste = models.ForeignKey(
         'Ilustrador',  # Aponta para o modelo Ilustrador que criamos
         verbose_name='Ilustrador ajuste',

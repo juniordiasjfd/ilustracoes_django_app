@@ -334,10 +334,6 @@
                                 <th>Crédito</th>
                                 {% endif %}
                                 
-                                {% if preferencias_colunas.exibir_ilustrador_resgate %}
-                                <th>Ilustrador resgate</th>
-                                {% endif %}
-                                
                                 {% if preferencias_colunas.exibir_ilustrador %}
                                 <th>Ilustrador criação</th>
                                 {% endif %}
@@ -458,10 +454,6 @@
                                 
                                 {% if preferencias_colunas.exibir_credito %}
                                 <td title="Crédito">{{ il.credito|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_ilustrador_resgate %}
-                                <td title="Ilustrador resgate">{{ il.ilustrador_resgate|default:"" }}</td>
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_ilustrador %}

@@ -15,7 +15,9 @@ class IlustracaoModelForm(forms.ModelForm):
             'data_liberacao_para_arte', 'data_envio_pedido', 'data_recebimento_rafe', 
             'data_retorno_rafe', 'data_recebimento_finalizada', 
             # Campos Foreign Key (Select2)
-            'ilustrador', 'ilustrador_resgate', 'ilustrador_ajuste', 
+            'ilustrador', 
+            # 'ilustrador_resgate', 
+            'ilustrador_ajuste', 
             'credito', 
             'classificacao', 'observacao_arte', 'pagamento',
             'projeto', 'componente',
@@ -47,7 +49,7 @@ class IlustracaoModelForm(forms.ModelForm):
             
             # 1.2. Configuração dos Select2 (Adicionando a classe 'select2')
             'ilustrador': forms.Select(attrs={'class': 'form-control select2'}),
-            'ilustrador_resgate': forms.Select(attrs={'class': 'form-control select2'}),
+            # 'ilustrador_resgate': forms.Select(attrs={'class': 'form-control select2'}),
             'ilustrador_ajuste': forms.Select(attrs={'class': 'form-control select2'}),
             'credito': forms.Select(attrs={'class': 'form-control select2'}),
             'projeto': forms.Select(attrs={'class': 'form-control select2'}),
@@ -86,7 +88,7 @@ class IlustracaoModelForm(forms.ModelForm):
                 self.fields[field_name].input_formats = ['%d/%m/%Y', '%d/%m/%y']
         # Garante que os campos Select2 iniciem vazios, se não forem obrigatórios
         self.fields['ilustrador'].empty_label = "Selecione um ilustrador..." 
-        self.fields['ilustrador_resgate'].empty_label = "Selecione um ilustrador..." 
+        # self.fields['ilustrador_resgate'].empty_label = "Selecione um ilustrador..." 
         self.fields['ilustrador_ajuste'].empty_label = "Selecione um ilustrador..." 
         self.fields['credito'].empty_label = "Selecione um crédito..." 
         self.fields['projeto'].empty_label = "Selecione um projeto..." 
