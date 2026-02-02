@@ -133,7 +133,7 @@ class PreferenciasColunasTabela(Base):
     exibir_tipo = models.BooleanField('Tipo', default=True)
     exibir_descricao = models.BooleanField('Descrição', default=True)
     exibir_observacao_edit_nuc = models.BooleanField('Observação editorial e núcleo', default=True)
-    exibir_lote = models.BooleanField('Lote', default=True)
+    exibir_lote = models.BooleanField('Lote', default=False)
     exibir_data_liberacao_para_arte = models.BooleanField('Data de liberação para arte', default=True)
     exibir_data_envio_pedido = models.BooleanField('Data de envio do pedido', default=True)
     exibir_data_recebimento_rafe = models.BooleanField('Data de recebimento do rafe', default=True)

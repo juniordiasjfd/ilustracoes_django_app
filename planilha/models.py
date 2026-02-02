@@ -123,7 +123,7 @@ class Ilustracao(Base):
     unidade = models.PositiveIntegerField('Unidade', null=True, blank=True) #
     capitulo_secao = models.CharField('Capítulo ou seção', max_length=100, null=True, blank=True) #
     observacao_edit_nuc = models.TextField('Observação editorial e núcleo', null=True, blank=True, max_length=2000)
-    lote = models.PositiveIntegerField('Lote', null=True, blank=True)
+    lote = models.PositiveIntegerField('Lote', null=True, blank=True, default=0)
     data_liberacao_para_arte = models.DateTimeField('Data de liberação do lote', null=True, blank=True, default=timezone.now)
     data_envio_pedido = models.DateTimeField('Data de envio do pedido', null=True, blank=True)
     data_recebimento_rafe = models.DateTimeField('Data de recebimento do rafe', null=True, blank=True)

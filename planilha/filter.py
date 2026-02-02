@@ -76,16 +76,16 @@ class IlustracaoFilter(django_filters.FilterSet):
         label='Tipo',
         help_text='Use Ctrl para selecionar dois ou mais.'
     )
-    lote = django_filters.NumberFilter(
-        lookup_expr='exact',
-        widget=forms.NumberInput(attrs={'class': 'form-control'}),
-        label='Lote'
-    )
-    lote_preenchido = django_filters.BooleanFilter(
-        method='filter_lote_preenchido',
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        label='Lote preenchido'
-    )
+    # lote = django_filters.NumberFilter(
+    #     lookup_expr='exact',
+    #     widget=forms.NumberInput(attrs={'class': 'form-control'}),
+    #     label='Lote'
+    # )
+    # lote_preenchido = django_filters.BooleanFilter(
+    #     method='filter_lote_preenchido',
+    #     widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    #     label='Lote preenchido'
+    # )
     def filter_lote_preenchido(self, queryset, name, value):
         """Filtra apenas Ilustrações onde o campo lote NÃO é nulo."""
         if value:
