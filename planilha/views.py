@@ -450,6 +450,8 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
         Aqui processamos o arquivo Excel e atualizamos o banco de dados.
         """
         request = self.request
+        usuario_atual = request.user
+        agora = timezone.now()
         excel_file = request.FILES['arquivo_excel']
         try:
             # 1. Leitura do arquivo
@@ -468,6 +470,11 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                 'Data de recebimento do rafe': 'data_recebimento_rafe',
                 'Data de retorno do rafe': 'data_retorno_rafe',
                 'Data de recebimento da finalizada': 'data_recebimento_finalizada',
+                'Classificação': 'classificacao',
+                'Crédito': 'credito_nome',
+                'Ilustrador criação': 'ilustrador',
+                'Ilustrador ajuste': 'ilustrador_ajuste',
+                'Tipo': 'tipo',
             }, inplace=True)
             
             # Obtém as retrancas do Excel para buscar os objetos no DB
@@ -475,6 +482,8 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
             pks_do_excel = df['pk'].dropna().tolist()
             # Busca todos os objetos em uma única consulta (in_bulk cria um dict {pk: objeto})
             ilustracoes_db = Ilustracao.objects.filter(pk__in=pks_do_excel).in_bulk(field_name='pk')
+            creditos_db = {c.nome: c for c in Credito.objects.all()}
+            ilustradores_db = {f"{i.sigla} - {i.nome}": i for i in Ilustrador.objects.all()}
             
             ilustracoes_para_atualizar = []
             lista_de_campos_a_atualizar = []
@@ -489,6 +498,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                 
                 if pk and pk in ilustracoes_db:
                     il: Ilustracao = ilustracoes_db[pk]
+                    foi_alterada = False
                     
                     # --- Processa e valida o novo STATUS ---
                     novo_status_label = str(row.get('status', '')).strip()
@@ -500,6 +510,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                             lista_de_campos_a_atualizar.append('status')
                             if il not in ilustracoes_para_atualizar: 
                                 ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
 
                     # --- Processa e valida o novo PAGAMENTO ---
                     novo_pagamento_label = str(row.get('pagamento', '')).strip()
@@ -510,6 +521,18 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                             lista_de_campos_a_atualizar.append('pagamento')
                             if il not in ilustracoes_para_atualizar: 
                                 ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+                    
+                    # --- Processa e valida o novo TIPO ---
+                    novo_tipo_label = str(row.get('tipo', '')).strip()
+                    # Garante que o valor do Excel seja um valor válido
+                    if novo_tipo_label in Ilustracao.TipoChoices.values:
+                        if il.tipo != novo_tipo_label:
+                            il.tipo = novo_tipo_label
+                            lista_de_campos_a_atualizar.append('tipo')
+                            if il not in ilustracoes_para_atualizar: 
+                                ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
                     
                     # -- Processa e valida o LOTE ---
                     processar = False
@@ -529,6 +552,27 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                                 lista_de_campos_a_atualizar.append('lote')
                                 if il not in ilustracoes_para_atualizar:
                                     ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
+                    except: pass
+
+                    # -- Processa e valida o CLASSIFICAÇÃO ---
+                    processar = False
+                    nova_classificacao_label = str(row.get('classificacao','')).strip()
+                    if nova_classificacao_label == 'nan':
+                        nova_classificacao_label = None
+                    try:
+                        nova_classificacao_label = (None if nova_classificacao_label == None else int(float(nova_classificacao_label)))
+                        if nova_classificacao_label == None:
+                            processar = True
+                        elif nova_classificacao_label >= 0:
+                            processar = True
+                        if processar:
+                            if il.classificacao != nova_classificacao_label:
+                                il.classificacao = nova_classificacao_label
+                                lista_de_campos_a_atualizar.append('classificacao')
+                                if il not in ilustracoes_para_atualizar:
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
                     except: pass
 
                     # --- Processa e valida a data -- 
@@ -546,6 +590,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                             lista_de_campos_a_atualizar.append('data_liberacao_para_arte')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
                     
                     processar = False
                     nova_data_envio_pedido_label = row.get('data_envio_pedido','')
@@ -561,6 +606,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                             lista_de_campos_a_atualizar.append('data_envio_pedido')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
                     
                     processar = False
                     nova_data_recebimento_rafe_label = row.get('data_recebimento_rafe','')
@@ -576,6 +622,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                             lista_de_campos_a_atualizar.append('data_recebimento_rafe')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
                     
                     processar = False
                     nova_data_retorno_rafe_label = row.get('data_retorno_rafe','')
@@ -591,6 +638,7 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                             lista_de_campos_a_atualizar.append('data_retorno_rafe')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
                     
                     processar = False
                     nova_data_recebimento_finalizada_label = row.get('data_recebimento_finalizada','')
@@ -607,6 +655,48 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                             lista_de_campos_a_atualizar.append('data_recebimento_finalizada')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+                    
+                    # --- Processa crédito -- 
+                    nome_cred_excel = str(row.get('credito_nome', '')).strip()
+                    if nome_cred_excel not in ['', 'nan']:
+                        cred_obj = creditos_db.get(nome_cred_excel)
+                        if cred_obj and il.credito != cred_obj:
+                            il.credito = cred_obj
+                            lista_de_campos_a_atualizar.append('credito')
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+                    
+                    # --- Processa ilustrador criação -- 
+                    nome_ilustrador_excel = str(row.get('ilustrador', '')).strip()
+                    if nome_ilustrador_excel not in ['', 'nan']:
+                        ilustrador_obj = ilustradores_db.get(nome_ilustrador_excel)
+                        if ilustrador_obj and il.ilustrador != ilustrador_obj:
+                            il.ilustrador = ilustrador_obj
+                            lista_de_campos_a_atualizar.append('ilustrador')
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+                    
+                    # --- Processa ilustrador ajuste -- 
+                    nome_ilustrador_ajuste_excel = str(row.get('ilustrador_ajuste', '')).strip()
+                    if nome_ilustrador_ajuste_excel not in ['', 'nan']:
+                        ilustrador_ajuste_obj = ilustradores_db.get(nome_ilustrador_ajuste_excel)
+                        if ilustrador_ajuste_obj and il.ilustrador_ajuste != ilustrador_ajuste_obj:
+                            il.ilustrador_ajuste = ilustrador_ajuste_obj
+                            lista_de_campos_a_atualizar.append('ilustrador_ajuste')
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+                    
+                    # --- Processa a auditoria --
+                    if foi_alterada:
+                        il.atualizado_por = usuario_atual
+                        il.modificado_em = agora
+                        
+                        lista_de_campos_a_atualizar.append('atualizado_por')
+                        lista_de_campos_a_atualizar.append('modificado_em')
 
             # 4. Executa a Atualização em Massa
             if ilustracoes_para_atualizar:
