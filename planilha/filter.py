@@ -1,19 +1,33 @@
 import django_filters
 from django import forms
-from .models import Ilustracao
+from .models import Ilustracao, Componente, Projeto
 
 
 class IlustracaoFilter(django_filters.FilterSet):
-    projeto = django_filters.CharFilter(
-        lookup_expr='iregex', 
+    # projeto = django_filters.CharFilter(
+    #     lookup_expr='iregex', 
+    #     field_name='projeto__nome',
+    #     widget=forms.TextInput(attrs={'class': 'form-control'}),
+    #     label='Projeto'
+    # )
+    projeto = django_filters.ModelMultipleChoiceFilter(
         field_name='projeto__nome',
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        queryset=Projeto.objects.all(),
+        to_field_name='nome',
+        widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
         label='Projeto'
     )
-    componente = django_filters.CharFilter(
-        lookup_expr='iregex', 
-        field_name='componente__nome',
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
+    # componente = django_filters.CharFilter(
+    #     lookup_expr='iregex', 
+    #     field_name='componente__nome',
+    #     widget=forms.TextInput(attrs={'class': 'form-control'}),
+    #     label='Componente'
+    # )
+    componente = django_filters.ModelMultipleChoiceFilter(
+        field_name='componente__nome', 
+        queryset=Componente.objects.all(),
+        to_field_name='nome', 
+        widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
         label='Componente'
     )
     retranca = django_filters.CharFilter(
@@ -75,6 +89,22 @@ class IlustracaoFilter(django_filters.FilterSet):
         widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
         label='Tipo',
         help_text='Use Ctrl para selecionar dois ou mais.'
+    )
+    data_liberacao = django_filters.DateFromToRangeFilter(
+        field_name='data_liberacao_para_arte',
+        label='Data de liberação do lote (Início - Fim)',
+        widget=django_filters.widgets.RangeWidget(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+    data_finalizacao = django_filters.DateFromToRangeFilter(
+        field_name='data_recebimento_finalizada',
+        label='Data de recebimento da finalizada (Início - Fim)',
+        widget=django_filters.widgets.RangeWidget(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
     )
     # lote = django_filters.NumberFilter(
     #     lookup_expr='exact',

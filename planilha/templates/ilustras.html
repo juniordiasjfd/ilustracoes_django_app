@@ -473,7 +473,7 @@
                                 {% endif %}
 
                                 {% if preferencias_colunas.exibir_criado_por %}
-                                <td title="Criado por">{{ il.criado_por | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Criado por">{{ il.criado_por | default:"" }}</td>
                                 {% endif %}
 
                                 {% if preferencias_colunas.exibir_criado_em %}
@@ -481,7 +481,7 @@
                                 {% endif %}
                                 
                                 {% if preferencias_colunas.exibir_atualizado_por %}
-                                <td title="Modificado por">{{ il.atualizado_por | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Modificado por">{{ il.atualizado_por | default:"" }}</td>
                                 {% endif %}
 
                                 {% if preferencias_colunas.exibir_modificado_em %}
