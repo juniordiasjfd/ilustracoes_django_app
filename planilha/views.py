@@ -461,11 +461,19 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
             
             # 2. Mapeamento de Colunas e Preparações
             df.rename(columns={
-                'Retranca': 'retranca', 
+                # 'Retranca': 'retranca',
                 'Status': 'status', 
-                'Pagamento': 'pagamento',
+                # 'Categoria': 'categoria',
+                # 'Localização': 'localizacao',
+                'Volume': 'volume',
+                'Unidade': 'unidade',
+                'Capítulo ou seção': 'capitulo_secao',
+                # 'Página': 'pagina',
+                'Tipo': 'tipo',
+                # 'Descrição': 'descricao',
+                'Observação editorial e núcleo': 'observacao_edit_nuc',
                 'Lote': 'lote',
-                'Data de liberação para arte': 'data_liberacao_para_arte',
+                'Data de liberação do lote': 'data_liberacao_para_arte',
                 'Data de envio do pedido': 'data_envio_pedido',
                 'Data de recebimento do rafe': 'data_recebimento_rafe',
                 'Data de retorno do rafe': 'data_retorno_rafe',
@@ -474,11 +482,16 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                 'Crédito': 'credito_nome',
                 'Ilustrador criação': 'ilustrador',
                 'Ilustrador ajuste': 'ilustrador_ajuste',
-                'Tipo': 'tipo',
+                'Observação da arte': 'observacao_arte',
+                'Pagamento': 'pagamento',
+                # 'Criado por': '',
+                # 'Criado em': '',
+                # 'Modificado por': '',
+                # 'Modificado em': '',
+                # 'Projeto': '',
+                # 'Componente': '',
             }, inplace=True)
             
-            # Obtém as retrancas do Excel para buscar os objetos no DB
-            # retrancas_do_excel = df['retranca'].dropna().astype(str).str.strip().tolist()
             pks_do_excel = df['pk'].dropna().tolist()
             # Busca todos os objetos em uma única consulta (in_bulk cria um dict {pk: objeto})
             ilustracoes_db = Ilustracao.objects.filter(pk__in=pks_do_excel).in_bulk(field_name='pk')
@@ -574,6 +587,80 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                                     ilustracoes_para_atualizar.append(il)
                                     foi_alterada = True
                     except: pass
+
+                    # -- Processa e valida o VOLUME ---
+                    processar = False
+                    novo_volume_label = str(row.get('volume','')).strip()
+                    if novo_volume_label == 'nan':
+                        novo_volume_label = None
+                    try:
+                        novo_volume_label = (None if novo_volume_label == None else int(float(novo_volume_label)))
+                        if novo_volume_label == None:
+                            processar = True
+                        elif novo_volume_label >= 0:
+                            processar = True
+                        if processar:
+                            if il.volume != novo_volume_label:
+                                il.volume = novo_volume_label
+                                lista_de_campos_a_atualizar.append('volume')
+                                if il not in ilustracoes_para_atualizar:
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
+                    except: pass
+
+                    # -- Processa e valida o UNIDADE ---
+                    processar = False
+                    nova_unidade_label = str(row.get('unidade','')).strip()
+                    if nova_unidade_label == 'nan':
+                        nova_unidade_label = None
+                    try:
+                        nova_unidade_label = (None if nova_unidade_label == None else int(float(nova_unidade_label)))
+                        if nova_unidade_label == None:
+                            processar = True
+                        elif nova_unidade_label >= 0:
+                            processar = True
+                        if processar:
+                            if il.unidade != nova_unidade_label:
+                                il.unidade = nova_unidade_label
+                                lista_de_campos_a_atualizar.append('unidade')
+                                if il not in ilustracoes_para_atualizar:
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
+                    except: pass
+
+                    # -- Processa e valida o campo CAPITULO_SECAO ---
+                    nova_secao_label = str(row.get('capitulo_secao', '')).strip()
+                    # Se o pandas ler uma célula vazia, ele pode retornar 'nan' como string após o str()
+                    if nova_secao_label.lower() == 'nan' or nova_secao_label == '':
+                        nova_secao_label = None
+                    if il.capitulo_secao != nova_secao_label:
+                        il.capitulo_secao = nova_secao_label
+                        lista_de_campos_a_atualizar.append('capitulo_secao')
+                        if il not in ilustracoes_para_atualizar:
+                            ilustracoes_para_atualizar.append(il)
+                            foi_alterada = True
+                    
+                    # -- Processa o campo OBSERVACAO_EDIT_NUC ---
+                    nova_obs_edit_label = str(row.get('observacao_edit_nuc', '')).strip()
+                    if nova_obs_edit_label.lower() == 'nan' or nova_obs_edit_label == '':
+                        nova_obs_edit_label = None
+                    if il.observacao_edit_nuc != nova_obs_edit_label:
+                        il.observacao_edit_nuc = nova_obs_edit_label
+                        lista_de_campos_a_atualizar.append('observacao_edit_nuc')
+                        if il not in ilustracoes_para_atualizar:
+                            ilustracoes_para_atualizar.append(il)
+                            foi_alterada = True
+                    
+                    # -- Processa o campo OBSERVACAO_ARTE ---
+                    nova_obs_arte_label = str(row.get('observacao_arte', '')).strip()
+                    if nova_obs_arte_label.lower() == 'nan' or nova_obs_arte_label == '':
+                        nova_obs_arte_label = None
+                    if il.observacao_arte != nova_obs_arte_label:
+                        il.observacao_arte = nova_obs_arte_label
+                        lista_de_campos_a_atualizar.append('observacao_arte')
+                        if il not in ilustracoes_para_atualizar:
+                            ilustracoes_para_atualizar.append(il)
+                            foi_alterada = True
 
                     # --- Processa e valida a data -- 
                     processar = False
