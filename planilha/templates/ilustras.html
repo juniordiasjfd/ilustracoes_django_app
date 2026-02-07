@@ -261,120 +261,34 @@
                             <tr>
                                 <th class="fixed-column">Retranca</th> 
                                 <th hidden>pk</th>
-                                
-                                {% if preferencias_colunas.exibir_status %}
-                                <th>Status</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_categoria %}
-                                <th>Categoria</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_localizacao %}
-                                <th>Localização</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_volume %}
-                                <th>Volume</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_unidade %}
-                                <th>Unidade</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_capitulo_secao %}
-                                <th>Capítulo ou seção</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_pagina %}
-                                <th>Página</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_tipo %}
-                                <th>Tipo</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_descricao %}
-                                <th>Descrição</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_observacao_edit_nuc %}
-                                <th>Observação editorial e núcleo</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_lote %}
-                                <th>Lote</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_liberacao_para_arte %}
-                                <th>Data de liberação do lote</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_envio_pedido %}
-                                <th>Data de envio do pedido</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_recebimento_rafe %}
-                                <th>Data de recebimento do rafe</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_retorno_rafe %}
-                                <th>Data de retorno do rafe</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_recebimento_finalizada %}
-                                <th>Data de recebimento da finalizada</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_classificacao %}
-                                <th>Classificação</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_credito %}
-                                <th>Crédito</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_ilustrador %}
-                                <th>Ilustrador criação</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_ilustrador_ajuste %}
-                                <th>Ilustrador ajuste</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_observacao_arte %}
-                                <th>Observação da arte</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_pagamento %}
-                                <th>Pagamento</th>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_criado_por %}
-                                <th>Criado por</th>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_criado_em %}
-                                <th>Criado em</th>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_atualizado_por %}
-                                <th>Modificado por</th>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_modificado_em %}
-                                <th>Modificado em</th>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_projeto %}
-                                <th>Projeto</th>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_componente %}
-                                <th>Componente</th>
-                                {% endif %}
-
-                                
+                                <th {% if not preferencias_colunas.exibir_status %} hidden {% endif %}>Status</th>
+                                <th {% if not preferencias_colunas.exibir_categoria %} hidden {% endif %}>Categoria</th>
+                                <th {% if not preferencias_colunas.exibir_localizacao %} hidden {% endif %}>Localização</th>
+                                <th {% if not preferencias_colunas.exibir_volume %} hidden {% endif %}>Volume</th>
+                                <th {% if not preferencias_colunas.exibir_unidade %} hidden {% endif %}>Unidade</th>
+                                <th {% if not preferencias_colunas.exibir_capitulo_secao %} hidden {% endif %}>Capítulo ou seção</th>
+                                <th {% if not preferencias_colunas.exibir_pagina %} hidden {% endif %}>Página</th>
+                                <th {% if not preferencias_colunas.exibir_tipo %} hidden {% endif %}>Tipo</th>
+                                <th {% if not preferencias_colunas.exibir_descricao %} hidden {% endif %}>Descrição</th>
+                                <th {% if not preferencias_colunas.exibir_observacao_edit_nuc %} hidden {% endif %}>Observação editorial e núcleo</th>
+                                <th {% if not preferencias_colunas.exibir_lote %} hidden {% endif %}>Lote</th>
+                                <th {% if not preferencias_colunas.exibir_data_liberacao_para_arte %} hidden {% endif %}>Data de liberação do lote</th>
+                                <th {% if not preferencias_colunas.exibir_data_envio_pedido %} hidden {% endif %}>Data de envio do pedido</th>
+                                <th {% if not preferencias_colunas.exibir_data_recebimento_rafe %} hidden {% endif %}>Data de recebimento do rafe</th>
+                                <th {% if not preferencias_colunas.exibir_data_retorno_rafe %} hidden {% endif %}>Data de retorno do rafe</th>
+                                <th {% if not preferencias_colunas.exibir_data_recebimento_finalizada %} hidden {% endif %}>Data de recebimento da finalizada</th>
+                                <th {% if not preferencias_colunas.exibir_classificacao %} hidden {% endif %}>Classificação</th>
+                                <th {% if not preferencias_colunas.exibir_credito %} hidden {% endif %}>Crédito</th>
+                                <th {% if not preferencias_colunas.exibir_ilustrador %} hidden {% endif %}>Ilustrador criação</th>
+                                <th {% if not preferencias_colunas.exibir_ilustrador_ajuste %} hidden {% endif %}>Ilustrador ajuste</th>
+                                <th {% if not preferencias_colunas.exibir_observacao_arte %} hidden {% endif %}>Observação da arte</th>
+                                <th {% if not preferencias_colunas.exibir_pagamento %} hidden {% endif %}>Pagamento</th>
+                                <th {% if not preferencias_colunas.exibir_criado_por %} hidden {% endif %}>Criado por</th>
+                                <th {% if not preferencias_colunas.exibir_criado_em %} hidden {% endif %}>Criado em</th>
+                                <th {% if not preferencias_colunas.exibir_atualizado_por %} hidden {% endif %}>Modificado por</th>
+                                <th {% if not preferencias_colunas.exibir_modificado_em %} hidden {% endif %}>Modificado em</th>
+                                <th {% if not preferencias_colunas.exibir_projeto %} hidden {% endif %}>Projeto</th>
+                                <th {% if not preferencias_colunas.exibir_componente %} hidden {% endif %}>Componente</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -383,120 +297,34 @@
                             <tr>
                                 <td title="Retranca" class="fixed-column">{{ il.retranca|default:"" }}</td>
                                 <td hidden>{{ il.pk }}</td>
-                                
-                                {% if preferencias_colunas.exibir_status %}
-                                <td title="Status">{{ il.get_status_display|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_categoria %}
-                                <td title="Categoria">{{ il.get_categoria_display|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_localizacao %}
-                                <td title="Localização">{{ il.get_localizacao_display|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_volume %}
-                                <td title="Volume">{{ il.volume|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_unidade %}
-                                <td title="Unidade">{{ il.unidade|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_capitulo_secao %}
-                                <td title="Capítulo ou seção">{{ il.capitulo_secao|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_pagina %}
-                                <td title="Página">{{ il.pagina|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_tipo %}
-                                <td title="Tipo">{{ il.get_tipo_display|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_descricao %}
-                                <td title="Descrição">{{ il.descricao|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_observacao_edit_nuc %}
-                                <td title="Observação editorial e núcleo">{{ il.observacao_edit_nuc|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_lote %}
-                                <td title="Lote">{{ il.lote|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_liberacao_para_arte %}
-                                <td title="Data de liberação do lote">{{ il.data_liberacao_para_arte | date:"d/m/Y"|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_envio_pedido %}
-                                <td title="Data de envio do pedido">{{ il.data_envio_pedido | date:"d/m/Y"|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_recebimento_rafe %}
-                                <td title="Data de recebimento do rafe">{{ il.data_recebimento_rafe | date:"d/m/Y"|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_retorno_rafe %}
-                                <td title="Data de retorno do rafe">{{ il.data_retorno_rafe | date:"d/m/Y"|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_data_recebimento_finalizada %}
-                                <td title="Data de recebimento da finalizada">{{ il.data_recebimento_finalizada | date:"d/m/Y"|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_classificacao %}
-                                <td title="Classificação">{{ il.classificacao|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_credito %}
-                                <td title="Crédito">{{ il.credito|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_ilustrador %}
-                                <td title="Ilustrador criação">{{ il.ilustrador|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_ilustrador_ajuste %}
-                                <td title="Ilustrador ajuste">{{ il.ilustrador_ajuste|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_observacao_arte %}
-                                <td title="Observação da arte">{{ il.observacao_arte|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_pagamento %}
-                                <td title="Pagamento">{{ il.get_pagamento_display|default:"" }}</td>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_criado_por %}
-                                <td title="Criado por">{{ il.criado_por | default:"" }}</td>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_criado_em %}
-                                <td title="Criado em">{{ il.criado_em | date:"d/m/Y"|default:"" }}</td>
-                                {% endif %}
-                                
-                                {% if preferencias_colunas.exibir_atualizado_por %}
-                                <td title="Modificado por">{{ il.atualizado_por | default:"" }}</td>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_modificado_em %}
-                                <td title="Modificado em">{{ il.modificado_em | date:"d/m/Y"|default:"" }}</td>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_projeto %}
-                                <td title="Projeto">{{ il.projeto|default:"" }}</td>
-                                {% endif %}
-
-                                {% if preferencias_colunas.exibir_componente %}
-                                <td title="Componente">{{ il.componente|default:"" }}</td>
-                                {% endif %}
-
-                                
+                                <td title="Status" {% if not preferencias_colunas.exibir_status %} hidden {% endif %}>{{ il.get_status_display|default:"" }}</td>
+                                <td title="Categoria" {% if not preferencias_colunas.exibir_categoria %} hidden {% endif %}>{{ il.get_categoria_display|default:"" }}</td>
+                                <td title="Localização" {% if not preferencias_colunas.exibir_localizacao %} hidden {% endif %}>{{ il.get_localizacao_display|default:"" }}</td>
+                                <td title="Volume" {% if not preferencias_colunas.exibir_volume %} hidden {% endif %}>{{ il.volume|default:"" }}</td>
+                                <td title="Unidade" {% if not preferencias_colunas.exibir_unidade %} hidden {% endif %}>{{ il.unidade|default:"" }}</td>
+                                <td title="Capítulo ou seção" {% if not preferencias_colunas.exibir_capitulo_secao %} hidden {% endif %}>{{ il.capitulo_secao|default:"" }}</td>
+                                <td title="Página" {% if not preferencias_colunas.exibir_pagina %} hidden {% endif %}>{{ il.pagina|default:"" }}</td>
+                                <td title="Tipo" {% if not preferencias_colunas.exibir_tipo %} hidden {% endif %}>{{ il.get_tipo_display|default:"" }}</td>
+                                <td title="Descrição" {% if not preferencias_colunas.exibir_descricao %} hidden {% endif %}>{{ il.descricao|default:"" }}</td>
+                                <td title="Observação editorial e núcleo" {% if not preferencias_colunas.exibir_observacao_edit_nuc %} hidden {% endif %}>{{ il.observacao_edit_nuc|default:"" }}</td>
+                                <td title="Lote" {% if not preferencias_colunas.exibir_lote %} hidden {% endif %}>{{ il.lote|default:"" }}</td>
+                                <td title="Data de liberação do lote" {% if not preferencias_colunas.exibir_data_liberacao_para_arte %} hidden {% endif %}>{{ il.data_liberacao_para_arte | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de envio do pedido" {% if not preferencias_colunas.exibir_data_envio_pedido %} hidden {% endif %}>{{ il.data_envio_pedido | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de recebimento do rafe" {% if not preferencias_colunas.exibir_data_recebimento_rafe %} hidden {% endif %}>{{ il.data_recebimento_rafe | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de retorno do rafe" {% if not preferencias_colunas.exibir_data_retorno_rafe %} hidden {% endif %}>{{ il.data_retorno_rafe | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Data de recebimento da finalizada" {% if not preferencias_colunas.exibir_data_recebimento_finalizada %} hidden {% endif %}>{{ il.data_recebimento_finalizada | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Classificação" {% if not preferencias_colunas.exibir_classificacao %} hidden {% endif %}>{{ il.classificacao|default:"" }}</td>
+                                <td title="Crédito" {% if not preferencias_colunas.exibir_credito %} hidden {% endif %}>{{ il.credito|default:"" }}</td>
+                                <td title="Ilustrador criação" {% if not preferencias_colunas.exibir_ilustrador %} hidden {% endif %}>{{ il.ilustrador|default:"" }}</td>
+                                <td title="Ilustrador ajuste" {% if not preferencias_colunas.exibir_ilustrador_ajuste %} hidden {% endif %}>{{ il.ilustrador_ajuste|default:"" }}</td>
+                                <td title="Observação da arte" {% if not preferencias_colunas.exibir_observacao_arte %} hidden {% endif %}>{{ il.observacao_arte|default:"" }}</td>
+                                <td title="Pagamento" {% if not preferencias_colunas.exibir_pagamento %} hidden {% endif %}>{{ il.get_pagamento_display|default:"" }}</td>
+                                <td title="Criado por" {% if not preferencias_colunas.exibir_criado_por %} hidden {% endif %}>{{ il.criado_por | default:"" }}</td>
+                                <td title="Criado em" {% if not preferencias_colunas.exibir_criado_em %} hidden {% endif %}>{{ il.criado_em | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Modificado por" {% if not preferencias_colunas.exibir_atualizado_por %} hidden {% endif %}>{{ il.atualizado_por | default:"" }}</td>
+                                <td title="Modificado em" {% if not preferencias_colunas.exibir_modificado_em %} hidden {% endif %}>{{ il.modificado_em | date:"d/m/Y"|default:"" }}</td>
+                                <td title="Projeto" {% if not preferencias_colunas.exibir_projeto %} hidden {% endif %}>{{ il.projeto|default:"" }}</td>
+                                <td title="Componente" {% if not preferencias_colunas.exibir_componente %} hidden {% endif %}>{{ il.componente|default:"" }}</td>
                                 <td class="text-nowrap">
                                     <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info" target="_blank"
                                         title="Use Ctrl + Clique para abrir em nova janela">
