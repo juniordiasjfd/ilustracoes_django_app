@@ -234,21 +234,21 @@
 
                     <button class="btn btn-success btn-sm"
                         onclick="exportTableToCSV('tabela_de_ilustracoes', 'ilustracoes.csv')">
-                        Exportar tudo para CSV
+                        Exportar exibição para CSV
                     </button>
                     <button class="btn btn-success btn-sm"
                         onclick="exportTable('tabela_de_ilustracoes', 'xlsx', 'ilustracoes');">
-                        Exportar tudo para Excel
+                        Exportar exibição para Excel
                     </button>
 
                     <a href="{% url 'exportar_creditos_csv' %}?{{ request.GET.urlencode }}" 
                         class="btn btn-primary btn-sm" 
                         role="button">
-                        Exportar créditos em CSV
+                        Exportar créditos visíveis em CSV
                         </a>
 
                         <a href="{% url 'import_ilustracoes_excel' %}" class="btn btn-info btn-sm">
-                            <i class="fas fa-file-import"></i> Importar **novas** ilustrações (criação)
+                            <i class="fas fa-file-import"></i> Importar novas ilustrações do Excel
                             </a>
                         <a href="{% url 'upload_ilustracoes_excel' %}" class="btn btn-warning btn-sm">
                             <i class="fas fa-file-upload"></i> Importar atualizações do Excel
