@@ -236,10 +236,15 @@
                         onclick="exportTableToCSV('tabela_de_ilustracoes', 'ilustracoes.csv')">
                         Exportar exibição para CSV
                     </button>
-                    <button class="btn btn-success btn-sm"
+                    <!-- <button class="btn btn-success btn-sm"
                         onclick="exportTable('tabela_de_ilustracoes', 'xlsx', 'ilustracoes');">
                         Exportar exibição para Excel
-                    </button>
+                    </button> -->
+                    <a href="{% url 'exportar_ilustras_excel_completo' %}?{{ request.GET.urlencode }}" 
+                        class="btn btn-success btn-sm" 
+                        role="button">
+                        <i class="fas fa-file-excel"></i> Exportar exibição para Excel
+                    </a>
 
                     <a href="{% url 'exportar_creditos_csv' %}?{{ request.GET.urlencode }}" 
                         class="btn btn-primary btn-sm" 

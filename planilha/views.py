@@ -14,14 +14,14 @@ from django.utils import timezone
 from django.db import transaction
 from django.http import HttpResponse
 import csv
-
+import openpyxl
 
 from .models import Projeto, Componente, Ilustracao, Ilustrador, Credito
 from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm, UploadExcelForm, UploadForCreateIlustracoesForm
 from .filter import IlustracaoFilter
 from usuario.models import PreferenciasPreFiltro, PreferenciasColunasTabela
 from django.views.generic.edit import FormView
-from .excel import create_excel
+from .excel import create_excel, create_excel_with_data
 from io import BytesIO
 
 
@@ -1099,26 +1099,19 @@ class ExportarCreditosCSV(View):
     """
     Exporta Retranca e Crédito das Ilustrações Filtradas em formato CSV.
     """
-    
     def get(self, request, *args, **kwargs):
-
-        
-
         # 1. Definir o QuerySet Base
         queryset_base = Ilustracao.objects.filter(
             ativo=True,
             projeto__ativo=True,
             componente__ativo=True
         ).order_by('-lote')
-
         queryset_filtrado_pelo_prefiro, _ = aplicar_pre_filtro_ilustras(request, queryset_base)
         queryset_ordenado = queryset_filtrado_pelo_prefiro.order_by('-lote')
-
         # 2. Aplicar os filtros da requisição (request.GET)
         # O self.request.GET contém os mesmos parâmetros da URL.
         filtro = IlustracaoFilter(self.request.GET, queryset=queryset_ordenado)
         ilustracoes_filtradas = filtro.qs
-        
         # 3. Preparar a resposta CSV
         response = HttpResponse(
             content_type='text/csv',
@@ -1127,23 +1120,39 @@ class ExportarCreditosCSV(View):
             }
         )
         response.write(u'\ufeff'.encode('utf8'))
-
         writer = csv.writer(response)
-        
         # Cabeçalho do CSV
         writer.writerow(['retranca', 'credito'])
-
         # 4. Escrever os dados no CSV
         for ilustracao in ilustracoes_filtradas:
             # Acessa o nome do crédito (assumindo que 'credito' é um ForeignKey com campo 'nome')
             # Use o operador ternário para lidar com campos nulos.
             credito_nome = ilustracao.credito.nome if ilustracao.credito else ""
-            
             # Escreve a linha no CSV
             writer.writerow([
                 ilustracao.retranca,
                 credito_nome
             ])
-
         return response
 
+class ExportarIlustrasExcel(View):
+    def get(self, request, *args, **kwargs):
+        # 1. Filtros (mesma lógica anterior)
+        queryset_base = Ilustracao.objects.filter(
+            ativo=True, projeto__ativo=True, componente__ativo=True
+        ).order_by('-lote')
+        
+        queryset_filtrado, _ = aplicar_pre_filtro_ilustras(request, queryset_base)
+        filtro = IlustracaoFilter(request.GET, queryset=queryset_filtrado)
+        ilustracoes = filtro.qs
+
+        # 2. Chama a função do seu arquivo excel.py passando o queryset filtrado
+        wb = create_excel_with_data(queryset=filtro.qs)
+
+        # 3. Resposta HTTP
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        )
+        response['Content-Disposition'] = 'attachment; filename="ilustracoes_export.xlsx"'
+        wb.save(response)
+        return response

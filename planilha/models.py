@@ -130,7 +130,7 @@ class Ilustracao(Base):
     data_retorno_rafe = models.DateTimeField('Data de retorno do rafe', null=True, blank=True)
     data_recebimento_finalizada = models.DateTimeField('Data de recebimento da finalizada', null=True, blank=True)
     classificacao = models.PositiveIntegerField('Classificação', null=True, blank=True)
-    observacao_arte = models.TextField('Observação arte', null=True, blank=True, max_length=2000)
+    observacao_arte = models.TextField('Observação da arte', null=True, blank=True, max_length=2000)
     # 2. Declaração do campo que será persistido no banco
     status = models.CharField( #
         verbose_name='Status',

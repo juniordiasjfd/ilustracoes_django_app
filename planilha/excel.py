@@ -102,7 +102,7 @@ def reordenar_colunas_para_excel(colunas_originais):
         'Ilustrador resgate', 
         'Ilustrador criação', 
         'Ilustrador ajuste', 
-        'Observação arte',
+        'Observação da arte',
         'Pagamento',
         'Projeto',
         'Componente',
@@ -228,7 +228,7 @@ def create_excel():
             ws_data.column_dimensions[col_letter].width = 25
                 
         # Ajustes de largura para outros campos (mantidos)
-        elif verbose_name in ['Descrição', 'Observação editorial e núcleo', 'Observação arte']:
+        elif verbose_name in ['Descrição', 'Observação editorial e núcleo', 'Observação da arte']:
             ws_data.column_dimensions[col_letter].width = 40
         elif 'Data' in verbose_name:
             ws_data.column_dimensions[col_letter].width = 18
@@ -240,4 +240,129 @@ def create_excel():
     # workbook.save(file_name)
     return workbook
 
+def create_excel_with_data(queryset=None):
+    """
+    Gera um Excel com validação de dados (dropdowns) e, se fornecido, 
+    preenche com os dados do queryset filtrado.
+    """
+    # 1. Obter e reordenar colunas conforme a lógica que já definiu
+    colunas_originais = get_verbose_names(Ilustracao)
+    COLUNAS_ILUSTRACAO = reordenar_colunas_para_excel(colunas_originais)
 
+    if 'pk' not in [c.lower() for c in COLUNAS_ILUSTRACAO]:
+        # Insere na segunda posição para respeitar a ordem do seu HTML
+        COLUNAS_ILUSTRACAO.insert(1, 'pk')
+
+    # 2. Configuração de dropdowns (mantendo a sua lógica original)
+    field_options = get_choice_options(Ilustracao)
+    dynamic_options = {}
+    for verbose_name, value in field_options.items():
+        if isinstance(value, str):
+            dynamic_options[verbose_name] = get_foreign_key_values(value)
+
+    # 3. Criar o Workbook e preparar a folha de opções oculta
+    workbook = openpyxl.Workbook()
+    ws_data = workbook.active
+    ws_data.title = "Dados de Ilustracao"
+    
+    ws_options = workbook.create_sheet(title="Opcoes_Dropdown")
+    ws_options.sheet_state = 'hidden'
+
+    # Preencher ws_options e criar Defined Names para os dropdowns
+    option_col = 1
+    dropdown_references = {}
+    all_dropdown_fields = {**field_options, **dynamic_options}
+
+    for verbose_name, options_list in all_dropdown_fields.items():
+        if isinstance(options_list, list) and options_list:
+            ws_options.cell(row=1, column=option_col, value=verbose_name)
+            for row_num, option in enumerate(options_list, 2):
+                ws_options.cell(row=row_num, column=option_col, value=option)
+
+            list_range = f'${get_column_letter(option_col)}$2:${get_column_letter(option_col)}${len(options_list) + 1}'
+            dropdown_name = verbose_name.replace(' ', '_').replace('á', 'a').replace('é', 'e').replace('ç', 'c') + "_List"
+            
+            defined_name = DefinedName(name=dropdown_name, attr_text=f"'{ws_options.title}'!{list_range}")
+            workbook.defined_names.add(defined_name)
+            dropdown_references[verbose_name] = dropdown_name
+            option_col += 1
+
+    # 4. Escrever o Cabeçalho na folha principal
+    ws_data.append(COLUNAS_ILUSTRACAO)
+    ws_data.freeze_panes = 'A2'
+
+    # 5. Preencher com dados do QuerySet
+    if queryset:
+        for objeto in queryset:
+            linha = []
+            for verbose_name in COLUNAS_ILUSTRACAO:
+                # Caso especial para a coluna PK
+                if verbose_name.lower() == 'pk':
+                    valor = objeto.pk
+                else:
+                    # Tenta encontrar o campo pelo verbose_name
+                    try:
+                        campo = next(f for f in Ilustracao._meta.fields if f.verbose_name == verbose_name)
+                        nome_campo = campo.name
+                        
+                        if hasattr(objeto, f'get_{nome_campo}_display'):
+                            valor = getattr(objeto, f'get_{nome_campo}_display')()
+                        else:
+                            valor = getattr(objeto, nome_campo)
+                    except StopIteration:
+                        valor = ""
+
+                # Tratamento para Foreign Keys e Objetos
+                if hasattr(valor, 'pk') and valor:
+                    valor = str(valor)
+                
+                # Tratamento para Datas (Formato Brasileiro)
+                if hasattr(valor, 'strftime'):
+                    valor = valor.replace(tzinfo=None) if valor else ""
+                
+                linha.append(valor if valor is not None else "")
+            
+            ws_data.append(linha)
+            
+            # Formatação de data nas células correspondentes
+            row_idx = ws_data.max_row
+            for col_idx, v_name in enumerate(COLUNAS_ILUSTRACAO, 1):
+                if any(word in v_name for word in ['Data', 'Modificado', 'Criado']):
+                    cell = ws_data.cell(row=row_idx, column=col_idx)
+                    cell.number_format = 'DD/MM/YYYY'
+
+    # 6. Aplicar Validações de Dados (Dropdowns) e Ajustar Larguras
+    START_ROW = 2
+    END_ROW = 100  # Define até qual linha a validação funcionará
+
+    for col_idx, verbose_name in enumerate(COLUNAS_ILUSTRACAO, 1):
+        col_letter = get_column_letter(col_idx)
+        
+        # --- NOVO: APLICAÇÃO DA VALIDAÇÃO ---
+        if verbose_name in dropdown_references:
+            dv = DataValidation(
+                type="list", 
+                formula1=f'={dropdown_references[verbose_name]}', 
+                allow_blank=True,
+                showErrorMessage=True,
+                errorTitle='Valor Inválido',
+                error='O valor inserido não está na lista de opções permitidas.'
+            )
+            # Aplica a validação da linha inicial até a linha 1000 na coluna atual
+            dv.add(f'{col_letter}{START_ROW}:{col_letter}{END_ROW}')
+            ws_data.add_data_validation(dv)
+            
+            # Ajusta largura para colunas com dropdown
+            ws_data.column_dimensions[col_letter].width = 25
+        
+        # --- AJUSTES DE LARGURA ADICIONAIS ---
+        elif verbose_name.lower() == 'pk':
+            ws_data.column_dimensions[col_letter].width = 8
+        elif 'Data' in verbose_name or 'em' in verbose_name:
+            ws_data.column_dimensions[col_letter].width = 18
+        elif verbose_name in ['Descrição', 'Observação editorial e núcleo', 'Observação da arte']:
+            ws_data.column_dimensions[col_letter].width = 40
+        else:
+            ws_data.column_dimensions[col_letter].width = 15
+
+    return workbook
