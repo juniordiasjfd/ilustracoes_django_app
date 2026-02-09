@@ -469,14 +469,14 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
             df.rename(columns={
                 # 'Retranca': 'retranca',
                 'Status': 'status', 
-                # 'Categoria': 'categoria',
-                # 'Localização': 'localizacao',
+                'Categoria': 'categoria',
+                'Localização': 'localizacao',
                 'Volume': 'volume',
                 'Unidade': 'unidade',
                 'Capítulo ou seção': 'capitulo_secao',
-                # 'Página': 'pagina',
+                'Página': 'pagina',
                 'Tipo': 'tipo',
-                # 'Descrição': 'descricao',
+                'Descrição': 'descricao',
                 'Observação editorial e núcleo': 'observacao_edit_nuc',
                 'Lote': 'lote',
                 'Data de liberação do lote': 'data_liberacao_para_arte',
@@ -494,8 +494,8 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                 # 'Criado em': '',
                 # 'Modificado por': '',
                 # 'Modificado em': '',
-                # 'Projeto': '',
-                # 'Componente': '',
+                'Projeto': 'projeto',
+                'Componente': 'componente',
             }, inplace=True)
             
             pks_do_excel = df['pk'].dropna().tolist()
@@ -503,6 +503,8 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
             ilustracoes_db = Ilustracao.objects.filter(pk__in=pks_do_excel).in_bulk(field_name='pk')
             creditos_db = {c.nome: c for c in Credito.objects.all()}
             ilustradores_db = {f"{i.sigla} - {i.nome}": i for i in Ilustrador.objects.all()}
+            projetos_db = {c.nome: c for c in Projeto.objects.all()}
+            componentes_db = {c.nome: c for c in Componente.objects.all()}
             
             ilustracoes_para_atualizar = []
             lista_de_campos_a_atualizar = []
@@ -549,6 +551,28 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                         if il.tipo != novo_tipo_label:
                             il.tipo = novo_tipo_label
                             lista_de_campos_a_atualizar.append('tipo')
+                            if il not in ilustracoes_para_atualizar: 
+                                ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+                    
+                    # --- Processa e valida o nova CATEGORIA ---
+                    nova_categoria_label = str(row.get('categoria', '')).strip()
+                    # Garante que o valor do Excel seja um valor válido
+                    if nova_categoria_label in Ilustracao.CategoriaChoices.values:
+                        if il.categoria != nova_categoria_label:
+                            il.categoria = nova_categoria_label
+                            lista_de_campos_a_atualizar.append('categoria')
+                            if il not in ilustracoes_para_atualizar: 
+                                ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+
+                    # --- Processa e valida o nova LOCALIZAÇÃO ---
+                    nova_localizacao_label = str(row.get('localizacao', '')).strip()
+                    # Garante que o valor do Excel seja um valor válido
+                    if nova_localizacao_label in Ilustracao.LocalizacaoChoices.values:
+                        if il.localizacao != nova_localizacao_label:
+                            il.localizacao = nova_localizacao_label
+                            lista_de_campos_a_atualizar.append('localizacao')
                             if il not in ilustracoes_para_atualizar: 
                                 ilustracoes_para_atualizar.append(il)
                                 foi_alterada = True
@@ -634,6 +658,26 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                                     foi_alterada = True
                     except: pass
 
+                    # -- Processa e valida o PÁGINA ---
+                    processar = False
+                    nova_pagina_label = str(row.get('pagina','')).strip()
+                    if nova_pagina_label == 'nan':
+                        nova_pagina_label = None
+                    try:
+                        nova_pagina_label = (None if nova_pagina_label == None else int(float(nova_pagina_label)))
+                        if nova_pagina_label == None:
+                            processar = True
+                        elif nova_pagina_label >= 0:
+                            processar = True
+                        if processar:
+                            if il.pagina != nova_pagina_label:
+                                il.pagina = nova_pagina_label
+                                lista_de_campos_a_atualizar.append('pagina')
+                                if il not in ilustracoes_para_atualizar:
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
+                    except: pass
+
                     # -- Processa e valida o campo CAPITULO_SECAO ---
                     nova_secao_label = str(row.get('capitulo_secao', '')).strip()
                     # Se o pandas ler uma célula vazia, ele pode retornar 'nan' como string após o str()
@@ -664,6 +708,17 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                     if il.observacao_arte != nova_obs_arte_label:
                         il.observacao_arte = nova_obs_arte_label
                         lista_de_campos_a_atualizar.append('observacao_arte')
+                        if il not in ilustracoes_para_atualizar:
+                            ilustracoes_para_atualizar.append(il)
+                            foi_alterada = True
+                    
+                    # -- Processa o campo DESCRIÇÃO ---
+                    nova_descricao_label = str(row.get('descricao', '')).strip()
+                    if nova_descricao_label.lower() == 'nan' or nova_descricao_label == '':
+                        nova_descricao_label = None
+                    if il.descricao != nova_descricao_label:
+                        il.descricao = nova_descricao_label
+                        lista_de_campos_a_atualizar.append('descricao')
                         if il not in ilustracoes_para_atualizar:
                             ilustracoes_para_atualizar.append(il)
                             foi_alterada = True
@@ -779,6 +834,28 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
                         if ilustrador_ajuste_obj and il.ilustrador_ajuste != ilustrador_ajuste_obj:
                             il.ilustrador_ajuste = ilustrador_ajuste_obj
                             lista_de_campos_a_atualizar.append('ilustrador_ajuste')
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+                    
+                    # --- Processa PROJETO -- 
+                    nome_projeto_excel = str(row.get('projeto', '')).strip()
+                    if nome_projeto_excel not in ['', 'nan']:
+                        projeto_obj = projetos_db.get(nome_projeto_excel)
+                        if projeto_obj and il.projeto != projeto_obj:
+                            il.projeto = projeto_obj
+                            lista_de_campos_a_atualizar.append('projeto')
+                            if il not in ilustracoes_para_atualizar:
+                                ilustracoes_para_atualizar.append(il)
+                                foi_alterada = True
+                    
+                    # --- Processa COMPONENTE -- 
+                    nome_componente_excel = str(row.get('componente', '')).strip()
+                    if nome_componente_excel not in ['', 'nan']:
+                        componente_obj = componentes_db.get(nome_componente_excel)
+                        if componente_obj and il.componente != componente_obj:
+                            il.componente = componente_obj
+                            lista_de_campos_a_atualizar.append('componente')
                             if il not in ilustracoes_para_atualizar:
                                 ilustracoes_para_atualizar.append(il)
                                 foi_alterada = True
