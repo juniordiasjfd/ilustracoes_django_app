@@ -1239,3 +1239,52 @@ class ExportarIlustrasExcel(View):
         response['Content-Disposition'] = 'attachment; filename="ilustracoes_export.xlsx"'
         wb.save(response)
         return response
+    
+def exportar_base_completa_ilustracoes_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="planilha_completa_ilustracoes.csv"'
+    
+    # UTF-8 com BOM ajuda o Excel a reconhecer caracteres especiais (acentos)
+    response.write(u'\ufeff'.encode('utf8'))
+    writer = csv.writer(response, delimiter=';')
+
+    # 1. Pegar todos os campos do modelo
+    campos = Ilustracao._meta.get_fields()
+    
+    # Filtrar apenas campos que são colunas reais no banco (pular ManyToMany ou reversos)
+    nomes_colunas = [f.name for f in campos if not f.many_to_many and not f.one_to_many]
+    
+    # 2. Escrever o cabeçalho (Verbose Name para ficar legível)
+    cabecalho = []
+    for nome in nomes_colunas:
+        campo = Ilustracao._meta.get_field(nome)
+        cabecalho.append(getattr(campo, 'verbose_name', nome).capitalize())
+    writer.writerow(cabecalho)
+
+    # 3. Escrever os dados
+    queryset = Ilustracao.objects.all()
+    
+    for obj in queryset:
+        linha = []
+        for nome in nomes_colunas:
+            valor = getattr(obj, nome)
+            
+            # Tratar campos com Choices para exportar o texto e não o código
+            if hasattr(obj, f'get_{nome}_display'):
+                valor = getattr(obj, f'get_{nome}_display')()
+            
+            # Tratar campos de Relacionamento (FK)
+            elif hasattr(valor, '__str__') and not isinstance(valor, (str, int, bool, type(None))):
+                valor = str(valor)
+            
+            # Tratar valores Nulos
+            if valor is None:
+                valor = ""
+                
+            linha.append(valor)
+        writer.writerow(linha)
+
+    return response
+
+
+
