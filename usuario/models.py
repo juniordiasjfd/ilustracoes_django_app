@@ -82,6 +82,19 @@ class PreenchimentoAutomaticoDeCampos(Base):
     def __str__(self):
         return f"Preferências #{self.pk} ({self.usuario.username if self.usuario else 'Sem Usuário'})"
 
+class TipoIlustracao(models.Model):
+    # Usamos os mesmos choices do modelo original
+    nome = models.CharField(
+        max_length=50, 
+        choices=Ilustracao.TipoChoices.choices, 
+        unique=True
+    )
+    class Meta:
+        verbose_name = 'Tipo de Ilustração'
+        verbose_name_plural = 'Tipos de Ilustração'
+    def __str__(self):
+        return self.get_nome_display()
+    
 class PreferenciasPreFiltro(Base):
     usuario = models.OneToOneField(
         User,
@@ -99,6 +112,12 @@ class PreferenciasPreFiltro(Base):
         'planilha.Componente',
         verbose_name='Componentes preferidos',
         related_name='%(class)s_componentes_preferidos',
+        blank=True,
+    )
+    tipos = models.ManyToManyField(
+        TipoIlustracao,
+        verbose_name='Tipos preferidos',
+        related_name='%(class)s_tipos_preferidos',
         blank=True,
     )
     volume = models.PositiveIntegerField(

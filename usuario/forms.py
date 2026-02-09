@@ -11,19 +11,21 @@ class PreferenciasPreFiltroModelForm(forms.ModelForm):
         fields = [
             'volume', 
             # Campos Foreign Key (Select2)
-            'projetos', 'componentes',
+            'projetos', 'componentes', 'tipos'
         ]
         # 1. Adicionando Widgets para UX
         widgets = {
             # 1.2. Configuração dos Select2 (Adicionando a classe 'select2')
             'projetos': forms.SelectMultiple(attrs={'class': 'form-control select2'}),
             'componentes': forms.SelectMultiple(attrs={'class': 'form-control select2'}),
+            'tipos': forms.SelectMultiple(attrs={'class': 'form-control select2'}),
         }
     # 2. Configurando input_formats para o formato brasileiro
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['projetos'].widget.attrs['data-placeholder'] = "Selecione um ou mais projetos com busca..."
         self.fields['componentes'].widget.attrs['data-placeholder'] = "Selecione um ou mais componentes com busca..."
+        self.fields['tipos'].widget.attrs['data-placeholder'] = "Selecione um ou mais tipos..."
 
 class PreenchimentoAutomaticoDeCamposModelForm(forms.ModelForm):
     class Meta:

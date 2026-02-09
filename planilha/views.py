@@ -63,11 +63,17 @@ def aplicar_pre_filtro_ilustras(request, queryset_base):
         if componentes_ids:
             filtro_q &= Q(componente__id__in=componentes_ids)
             
+        #### Filtro por TIPOS (ManyToMany)
+        tipos_selecionados = preferencias.tipos.values_list('nome', flat=True)
+        if tipos_selecionados:
+            # Filtramos o campo 'tipo' (CharField) do modelo Ilustracao
+            filtro_q &= Q(tipo__in=tipos_selecionados)
+
         #### Filtro por VOLUME (PositiveIntegerField)
         if preferencias.volume is not None:
             filtro_q &= Q(volume=preferencias.volume)
             
-        if preferencias.projetos.exists() or preferencias.componentes.exists() or preferencias.volume is not None:
+        if preferencias.tipos.exists() or preferencias.projetos.exists() or preferencias.componentes.exists() or preferencias.volume is not None:
             pre_filtro_ativo = True
             
         queryset_filtrado = queryset_base.filter(filtro_q)
