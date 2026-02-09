@@ -56,4 +56,5 @@ urlpatterns = [
     path('exportar/creditos/csv/', views.ExportarCreditosCSV.as_view(), name='exportar_creditos_csv'),
     path('exportar/excel/', views.ExportarIlustrasExcel.as_view(), name='exportar_ilustras_excel_completo'),
     path('exportar/ilustracoes-full/csv/', views.exportar_base_completa_ilustracoes_csv, name='exportar_csv_completo'),
+    path('api/exportar-ilustras-full/', views.ExportarBaseCompletaAPIView.as_view(), name='api_exportar_ilustras'),
 ]

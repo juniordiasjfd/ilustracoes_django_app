@@ -12,6 +12,7 @@ django-braces==1.17.0
 django-crispy-forms==2.5
 django-filter==25.2
 django-select2==8.4.3
+djangorestframework==3.16.1
 et_xmlfile==2.0.0
 gunicorn==23.0.0
 idna==3.11

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     "crispy_bootstrap4",
     'anymail',
+    'rest_framework',
     
     'planilha',
     'usuario',

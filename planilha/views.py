@@ -15,6 +15,8 @@ from django.db import transaction
 from django.http import HttpResponse
 import csv
 import openpyxl
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 
 from .models import Projeto, Componente, Ilustracao, Ilustrador, Credito
 from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm, UploadExcelForm, UploadForCreateIlustracoesForm
@@ -1286,5 +1288,18 @@ def exportar_base_completa_ilustracoes_csv(request):
 
     return response
 
+class ExportarBaseCompletaAPIView(APIView):
+    """
+    Esta API apenas reutiliza a lógica da função existente.
+    """
+    permission_classes = [AllowAny] # Ou IsAuthenticated, conforme sua escolha
 
+    def get(self, request, *args, **kwargs):
+        token_esperado = "secret-key-972"
+        token_recebido = request.GET.get('token')
+
+        if token_recebido != token_esperado:
+            return HttpResponse("Não autorizado", status=401)
+        # Chamamos a função passando o request da API e retornamos o resultado dela
+        return exportar_base_completa_ilustracoes_csv(request)
 
