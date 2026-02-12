@@ -146,12 +146,32 @@ class IlustracaoModelForm(forms.ModelForm):
                     self.fields['componente'].queryset = componentes_favoritos.filter(ativo=True).order_by('nome')
                 # --- Filtro de Crédito (Dependente do Projeto) ---
                 if projetos_favoritos.exists() or componentes_favoritos.exists():
-                    creditos_queryset = Credito.objects.filter(ativo=True)
+                    
+                    # ATUAL --- Filtro de Crédito (Projetos/Componentes favoritos + Créditos sem associações) ---
+                    # Base: créditos ativos
+                    creditos_qs = Credito.objects.filter(ativo=True)
+                    # Condição 1: Não possui projetos E não possui componentes
+                    condicao_vazio = Q(projetos__isnull=True) & Q(componentes__isnull=True)
+                    # Condição 2: Filtros de favoritos (usando OR entre eles e a condição de vazio)
+                    filtros_favoritos = Q()
                     if projetos_favoritos.exists():
-                        creditos_queryset = creditos_queryset.filter(projetos__in=projetos_favoritos)
+                        filtros_favoritos |= Q(projetos__in=projetos_favoritos)
                     if componentes_favoritos.exists():
-                        creditos_queryset = creditos_queryset.filter(componentes__in=componentes_favoritos)
-                    self.fields['credito'].queryset = creditos_queryset.distinct().order_by('nome')
+                        filtros_favoritos |= Q(componentes__in=componentes_favoritos)
+                    # Aplica a lógica: (Favoritos) OU (Vazios)
+                    self.fields['credito'].queryset = creditos_qs.filter(
+                        filtros_favoritos | condicao_vazio
+                    ).distinct().order_by('nome')
+
+                    # ANTIGO 2
+                    # creditos_queryset = Credito.objects.filter(ativo=True)
+                    # if projetos_favoritos.exists():
+                    #     creditos_queryset = creditos_queryset.filter(projetos__in=projetos_favoritos)
+                    # if componentes_favoritos.exists():
+                    #     creditos_queryset = creditos_queryset.filter(componentes__in=componentes_favoritos)
+                    # self.fields['credito'].queryset = creditos_queryset.distinct().order_by('nome')
+
+                    # ANTIGO 1
                     # # Filtra Créditos que estão associados (via M2M 'projetos') a qualquer um dos projetos favoritos.
                     # self.fields['credito'].queryset = Credito.objects.filter(
                     #     ativo=True,
