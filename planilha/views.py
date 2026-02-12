@@ -1201,7 +1201,7 @@ class ExportarCreditosCSV(View):
         response = HttpResponse(
             content_type='text/csv',
             headers={
-                'Content-Disposition': 'attachment; filename="creditos_ilustracoes_filtradas.csv"'
+                'Content-Disposition': 'attachment; filename="creditos.csv"'
             }
         )
         response.write(u'\ufeff'.encode('utf8'))
@@ -1213,6 +1213,49 @@ class ExportarCreditosCSV(View):
             # Acessa o nome do crédito (assumindo que 'credito' é um ForeignKey com campo 'nome')
             # Use o operador ternário para lidar com campos nulos.
             credito_nome = ilustracao.credito.nome if ilustracao.credito else ""
+            # Escreve a linha no CSV
+            writer.writerow([
+                ilustracao.retranca,
+                credito_nome
+            ])
+        return response
+
+
+class ExportarCreditosCsvWithReplace(View):
+    """
+    Exporta Retranca e Crédito das Ilustrações Filtradas em formato CSV.
+    Cópia da anterior, mas com troca de texto
+    """
+    def get(self, request, *args, **kwargs):
+        # 1. Definir o QuerySet Base
+        queryset_base = Ilustracao.objects.filter(
+            ativo=True,
+            projeto__ativo=True,
+            componente__ativo=True
+        ).order_by('-lote')
+        queryset_filtrado_pelo_prefiro, _ = aplicar_pre_filtro_ilustras(request, queryset_base)
+        queryset_ordenado = queryset_filtrado_pelo_prefiro.order_by('-lote')
+        # 2. Aplicar os filtros da requisição (request.GET)
+        # O self.request.GET contém os mesmos parâmetros da URL.
+        filtro = IlustracaoFilter(self.request.GET, queryset=queryset_ordenado)
+        ilustracoes_filtradas = filtro.qs
+        # 3. Preparar a resposta CSV
+        response = HttpResponse(
+            content_type='text/csv',
+            headers={
+                'Content-Disposition': 'attachment; filename="creditos_sem_arquivo_da_editora.csv"'
+            }
+        )
+        response.write(u'\ufeff'.encode('utf8'))
+        writer = csv.writer(response)
+        # Cabeçalho do CSV
+        writer.writerow(['retranca', 'credito'])
+        # 4. Escrever os dados no CSV
+        for ilustracao in ilustracoes_filtradas:
+            # Acessa o nome do crédito (assumindo que 'credito' é um ForeignKey com campo 'nome')
+            # Use o operador ternário para lidar com campos nulos.
+            credito_nome = ilustracao.credito.nome if ilustracao.credito else ""
+            credito_nome = credito_nome.replace('/ARQUIVO DA EDITORA','')
             # Escreve a linha no CSV
             writer.writerow([
                 ilustracao.retranca,
