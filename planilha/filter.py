@@ -12,7 +12,7 @@ class IlustracaoFilter(django_filters.FilterSet):
     # )
     projeto = django_filters.ModelMultipleChoiceFilter(
         field_name='projeto__nome',
-        queryset=Projeto.objects.all(),
+        queryset=Projeto.objects.filter(ativo=True),
         to_field_name='nome',
         widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
         label='Projeto'
@@ -25,7 +25,7 @@ class IlustracaoFilter(django_filters.FilterSet):
     # )
     componente = django_filters.ModelMultipleChoiceFilter(
         field_name='componente__nome', 
-        queryset=Componente.objects.all(),
+        queryset=Componente.objects.filter(ativo=True),
         to_field_name='nome', 
         widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
         label='Componente'

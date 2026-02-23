@@ -26,6 +26,8 @@ from django.views.generic.edit import FormView
 from .excel import create_excel, create_excel_with_data
 from io import BytesIO
 
+from ilustracoes.settings import RELATORIO_GERI
+
 
 def to_data_aware(date_naive):
     # 1. Crie o datetime naive
@@ -118,6 +120,7 @@ def ilustras(request):
         'num_linhas_total': num_linhas_total,
         'pre_filtro_ativo': pre_filtro_ativo,
         'preferencias_colunas': preferencias_colunas,
+        'RELATORIO_GERI': RELATORIO_GERI,
     }
     return render(request, 'ilustras.html', context)
 @login_required

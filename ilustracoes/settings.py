@@ -166,3 +166,5 @@ RECIPIENT_LIST = config('RECIPIENT_LIST', cast=Csv()) # lista de usu√°rios que √
 LOGIN_REDIRECT_URL = 'index'
 LOGIN_URL = 'login'
 LOGPUT_REDIRECT_URL = 'login'
+
+RELATORIO_GERI = config('RELATORIO_GERI')
