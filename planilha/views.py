@@ -969,6 +969,16 @@ class UploadCreateIlustracoesExcelView(LoginRequiredMixin, FormView):
             return valor_str
             
         return None
+    def _clear_integer(self, valor):
+        if valor is None:
+            return None
+        try:
+            num = float(valor)
+            if num.is_integer():
+                return str(int(num))
+            return str(valor)
+        except (ValueError, TypeError):
+            return valor
     def form_valid(self, form):
         arquivo = form.cleaned_data["arquivo"]
 
@@ -1063,6 +1073,17 @@ class UploadCreateIlustracoesExcelView(LoginRequiredMixin, FormView):
                 observacao_arte = row.get("observacao_arte") if pandas.notna(row.get("observacao_arte")) else None
                 pagamento = row.get("pagamento") if pandas.notna(row.get("pagamento")) else None
 
+                # -----------------------------
+                # campos de listas suspensas
+                # -----------------------------
+                if type(row["status"]) == str:
+                    status = row["status"].strip()
+                if type(row["categoria"]) == str:
+                    categoria = row["categoria"].strip()
+                if type(row["localizacao"]) == str:
+                    localizacao = row["localizacao"].strip()
+                if type(row["tipo"]) == str:
+                    tipo = row["tipo"].strip()
 
                 # -----------------------------
                 # 3. Criação da Ilustração
@@ -1071,13 +1092,13 @@ class UploadCreateIlustracoesExcelView(LoginRequiredMixin, FormView):
                 ilustracao = Ilustracao(
                     retranca=row["retranca"],
                     descricao=row["descricao"],
-                    volume=row["volume"],
+                    volume=self._clear_integer(row["volume"]),
 
-                    pagina=pagina,
-                    unidade=unidade,
-                    capitulo_secao=capitulo_secao,
+                    pagina=self._clear_integer(pagina),
+                    unidade=self._clear_integer(unidade),
+                    capitulo_secao=self._clear_integer(capitulo_secao),
                     observacao_edit_nuc=observacao_edit_nuc,
-                    lote=lote, # Agora pode ser None
+                    lote=self._clear_integer(lote), # Agora pode ser None
                     
                     # Campos de Data corrigidos
                     data_liberacao_para_arte=data_liberacao_para_arte,
@@ -1086,13 +1107,13 @@ class UploadCreateIlustracoesExcelView(LoginRequiredMixin, FormView):
                     data_retorno_rafe=data_retorno_rafe,
                     data_recebimento_finalizada=data_recebimento_finalizada,
                     
-                    classificacao=classificacao,
+                    classificacao=self._clear_integer(classificacao),
                     observacao_arte=observacao_arte,
 
-                    status=row["status"],
-                    categoria=row["categoria"],
-                    localizacao=row["localizacao"],
-                    tipo=row["tipo"],
+                    status=status,
+                    categoria=categoria,
+                    localizacao=localizacao,
+                    tipo=tipo,
                     pagamento=pagamento,
 
                     projeto=projeto,
