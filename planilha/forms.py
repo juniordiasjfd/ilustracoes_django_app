@@ -316,7 +316,7 @@ class ProjetoModelForm(forms.ModelForm):
         model = Projeto
         fields = ['nome', 'editora', 'ciclo']
 
-class UploadExcelForm(forms.Form):
+class UploadUpdateIlustracoesExcelForm(forms.Form):
     arquivo_excel = forms.FileField(
         label='Arquivo Excel (XLSX)',
         help_text='Use a planilha exportada e altere apenas as colunas desejadas. Mantenha a coluna pk.',
@@ -324,7 +324,7 @@ class UploadExcelForm(forms.Form):
     )
 
 
-class UploadForCreateIlustracoesForm(forms.Form):
+class UploadCreateIlustracoesExcelForm(forms.Form):
     arquivo = forms.FileField(
         label="Selecione o arquivo Excel",
         required=True,

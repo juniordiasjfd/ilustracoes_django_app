@@ -19,7 +19,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 
 from .models import Projeto, Componente, Ilustracao, Ilustrador, Credito
-from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm, UploadExcelForm, UploadForCreateIlustracoesForm
+from .forms import IlustracaoModelForm, ComponenteModelForm, ProjetoModelForm, IlustradorModelForm, CreditoModelForm, UploadUpdateIlustracoesExcelForm, UploadCreateIlustracoesExcelForm
 from .filter import IlustracaoFilter
 from usuario.models import PreferenciasPreFiltro, PreferenciasColunasTabela
 from django.views.generic.edit import FormView
@@ -450,9 +450,12 @@ def ajuda_regex(request):
     return render(request, 'ajuda_regex.html')
 
 
-class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
+class UploadUpdateIlustracoesExcelView(LoginRequiredMixin, FormView):
+    '''
+    Classe para importação de atualização de ilustrações existentes.
+    '''
     template_name = 'upload_ilustracoes.html'
-    form_class = UploadExcelForm
+    form_class = UploadUpdateIlustracoesExcelForm
     success_url = reverse_lazy('ilustras')
 
     def form_valid(self, form):
@@ -896,9 +899,12 @@ class UploadIlustracoesExcelView(LoginRequiredMixin, FormView):
             return self.form_invalid(form)
 
 
-class ImportarIlustracoesView(LoginRequiredMixin, FormView):
+class UploadCreateIlustracoesExcelView(LoginRequiredMixin, FormView):
+    '''
+    Classe para importar novas ilustrações a partir do excel.
+    '''
     template_name = "importar_ilustracoes.html"
-    form_class = UploadForCreateIlustracoesForm
+    form_class = UploadCreateIlustracoesExcelForm
     success_url = reverse_lazy("import_ilustracoes_excel")
 
     # -------------------------------
@@ -1149,7 +1155,7 @@ class ImportarIlustracoesView(LoginRequiredMixin, FormView):
 
         return super().form_valid(form)
 
-class DownloadTemplateDeImportarIlustracaoView(View):
+class DownloadTemplateUploadCreateIlustracoesExcelView(View):
     """
     View baseada em Classe (CBV) para gerar e servir o arquivo Excel 
     com validação de dados para download.
