@@ -9,9 +9,8 @@ class PreferenciasPreFiltroModelForm(forms.ModelForm):
     class Meta:
         model = PreferenciasPreFiltro
         fields = [
-            'volume', 
-            # Campos Foreign Key (Select2)
-            'projetos', 'componentes', 'tipos'
+            'projetos', 'componentes', 'tipos',
+            'volume', 'registros_por_pagina',
         ]
         # 1. Adicionando Widgets para UX
         widgets = {

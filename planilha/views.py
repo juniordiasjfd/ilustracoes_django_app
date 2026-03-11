@@ -25,6 +25,7 @@ from usuario.models import PreferenciasPreFiltro, PreferenciasColunasTabela
 from django.views.generic.edit import FormView
 from .excel import create_excel, create_excel_with_data
 from io import BytesIO
+from django.core.paginator import Paginator
 
 from ilustracoes.settings import RELATORIO_GERI
 
@@ -112,10 +113,29 @@ def ilustras(request):
     # filter = IlustracaoFilter(request.GET, queryset=Ilustracao.objects.filter(ativo=True))
     queryset_ordenado = queryset_filtrado.order_by('-lote')
     filter = IlustracaoFilter(request.GET, queryset=queryset_ordenado)
-    num_linhas = filter.qs.count()
+    queryset_final = filter.qs
+
+    num_linhas = queryset_final.count()
+
+    ############ paginador
+    try:
+        registros_por_pagina = request.user.preferencias_filtro.registros_por_pagina
+    except PreferenciasPreFiltro.DoesNotExist:
+        registros_por_pagina = 50
+    paginator = Paginator(queryset_final, registros_por_pagina)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    params = request.GET.copy()
+    if "page" in params:
+        params.pop("page")
+    ###########
+
     context = {
         'ativo': True,
         'filter': filter,
+        'page_obj': page_obj,
+        'querystring': params.urlencode(),
         'num_linhas': num_linhas,
         'num_linhas_total': num_linhas_total,
         'pre_filtro_ativo': pre_filtro_ativo,
@@ -154,11 +174,29 @@ def ilustras_excluidas(request):
     # 4. Aplica o Filtro Principal (Django-Filter) e Ordena
     queryset_ordenado = queryset_filtrado.order_by('-lote')
     filter = IlustracaoFilter(request.GET, queryset=queryset_ordenado)
-    num_linhas = filter.qs.count()
+    queryset_final = filter.qs
+
+    num_linhas = queryset_final.count()
+
+    ############ paginador
+    try:
+        registros_por_pagina = request.user.preferencias_filtro.registros_por_pagina
+    except PreferenciasPreFiltro.DoesNotExist:
+        registros_por_pagina = 50
+    paginator = Paginator(queryset_final, registros_por_pagina)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    params = request.GET.copy()
+    if "page" in params:
+        params.pop("page")
+    ###########
     
     context = {
         'ativo': False,
         'filter': filter,
+        'page_obj': page_obj,
+        'querystring': params.urlencode(),
         'num_linhas': num_linhas,
         'num_linhas_total': num_linhas_total,
         'pre_filtro_ativo': pre_filtro_ativo,

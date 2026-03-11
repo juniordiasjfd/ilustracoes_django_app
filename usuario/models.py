@@ -125,6 +125,7 @@ class PreferenciasPreFiltro(Base):
         blank=True,
         null=True,
     )
+    registros_por_pagina = models.PositiveIntegerField('Número de ilustrações por página', default=100)
 
     class Meta:
         verbose_name = 'Preferência de Pré-Filtro'
