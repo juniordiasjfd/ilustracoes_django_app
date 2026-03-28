@@ -31,22 +31,23 @@ class IlustracaoModelForm(forms.ModelForm):
                 
             ),
             'data_envio_pedido': forms.DateInput(
-                attrs={'class': 'form-control datepicker', 'autocomplete': 'off','placeholder': 'Escolha uma data...'},
+                attrs={'class': 'form-control datepicker', 'autocomplete': 'off','placeholder': 'Escolha uma data...', 'id': 'id_data_envio_pedido'},
                 format='%d/%m/%Y'
             ),
             'data_recebimento_rafe': forms.DateInput(
-                attrs={'class': 'form-control datepicker', 'autocomplete': 'off', 'placeholder': 'Escolha uma data...'},
+                attrs={'class': 'form-control datepicker', 'autocomplete': 'off', 'placeholder': 'Escolha uma data...', 'id': 'id_data_recebimento_rafe'},
                 format='%d/%m/%Y'
             ),
             'data_retorno_rafe': forms.DateInput(
-                attrs={'class': 'form-control datepicker', 'autocomplete': 'off', 'placeholder': 'Escolha uma data...'},
+                attrs={'class': 'form-control datepicker', 'autocomplete': 'off', 'placeholder': 'Escolha uma data...', 'id': 'id_data_retorno_rafe'},
                 format='%d/%m/%Y'
             ),
             'data_recebimento_finalizada': forms.DateInput(
-                attrs={'class': 'form-control datepicker', 'autocomplete': 'off', 'placeholder': 'Escolha uma data...'},
+                attrs={'class': 'form-control datepicker', 'autocomplete': 'off', 'placeholder': 'Escolha uma data...', 'id': 'id_data_recebimento_finalizada'},
                 format='%d/%m/%Y'
             ),
             
+            'status': forms.Select(attrs={'class': 'form-control', 'id': 'id_status'}),
             # 1.2. Configuração dos Select2 (Adicionando a classe 'select2')
             'ilustrador': forms.Select(attrs={'class': 'form-control select2'}),
             # 'ilustrador_resgate': forms.Select(attrs={'class': 'form-control select2'}),

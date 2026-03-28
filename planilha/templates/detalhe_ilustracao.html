@@ -69,6 +69,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
     {% include '_select2.html' %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        
+            function getField(name) {
+                return document.querySelector(`[name="${name}"]`);
+            }
+        
+            function bindStatusSuggestion(fieldName, statusValue, message) {
+                const field = getField(fieldName);
+                const statusField = getField('status');
+        
+                if (!field || !statusField) return;
+        
+                let valorAnterior = field.value;
+        
+                $(field).on('changeDate change', function () {
+        
+                    if (field.value && field.value !== valorAnterior) {
+        
+                        if (statusField.value === statusValue) return;
+        
+                        if (confirm(message)) {
+                            statusField.value = statusValue;
+                            $(statusField).trigger('change');
+                        }
+        
+                        valorAnterior = field.value;
+                    }
+                });
+            }
+        
+            bindStatusSuggestion('data_envio_pedido', 'ILUSTRANDO', 'Deseja alterar o status para ILUSTRANDO?');
+            bindStatusSuggestion('data_recebimento_rafe', 'AVALIANDO', 'Deseja alterar o status para AVALIANDO?');
+            bindStatusSuggestion('data_retorno_rafe', 'FINALIZANDO', 'Deseja alterar o status para FINALIZANDO?');
+            bindStatusSuggestion('data_recebimento_finalizada', 'AVALIANDO', 'Deseja alterar o status para AVALIANDO?');
+        
+        });
+        </script>
 </body>
 
 </html>
