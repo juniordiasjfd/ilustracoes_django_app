@@ -13,15 +13,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 </head>
 
+<style>
+    .two-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.two-columns .form-group {
+    width: calc(50% - 10px);
+}
+.form-control {
+    width: 100%;
+}
+.select2-container {
+    width: 100% !important;
+}
+@media (max-width: 768px) {
+    .two-columns .form-group {
+        width: 100%;
+    }
+}
+</style>
+
 <body>
     {% include '_nav.html' %}
     <div class="container mt-4">
         <h1>Editar ilustração: {{ object.retranca }}</h1>
 
+        <div class="mb-3">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="toggle-layout">
+                Alternar layout - 1 ou 2 colunas
+            </button>
+        </div>
         <form method="post">
             {% csrf_token %}
 
-            {% bootstrap_form form %}
+            <div id="form-layout" class="twocolumns">
+                {% bootstrap_form form %}
+            </div>
 
             <button type="submit" class="btn btn-success">Salvar alterações</button>
             <a href="{% url 'ilustras' %}" class="btn btn-secondary">Cancelar</a>
@@ -108,6 +138,37 @@
         
         });
         </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const wrapper = document.getElementById('form-layout');
+        const btn = document.getElementById('toggle-layout');
+    
+        let layout = localStorage.getItem('form_layout') || '1';
+    
+        function aplicarLayout() {
+            if (layout === '1') {
+                wrapper.classList.remove('two-columns');
+            } else {
+                wrapper.classList.add('two-columns');
+            }
+            atualizarTextoBotao()
+        }
+    
+        aplicarLayout();
+    
+        btn.addEventListener('click', function () {
+            layout = layout === '2' ? '1' : '2';
+            localStorage.setItem('form_layout', layout);
+            aplicarLayout();
+        });
+        function atualizarTextoBotao() {
+    btn.innerText = layout === '1'
+        ? 'Usar 2 colunas'
+        : 'Usar 1 coluna';
+}
+    });
+    </script>
 </body>
 
 </html>
