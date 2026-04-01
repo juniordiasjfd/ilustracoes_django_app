@@ -110,12 +110,17 @@ class Ilustracao(Base):
         RESGATE = 'RESGATE', 'RESGATE'
     class PagamentoChoices(models.TextChoices):
         AVALIAR = 'AVALIAR', 'AVALIAR'
-        PREVISAO =  'PREVISÃO', 'PREVISÃO'
-        FINALIZADO = 'FINALIZADO', 'FINALIZADO'
-        FINALIZADO_RAFE = 'FINALIZADO RAFE', 'FINALIZADO RAFE'
-        PAGO = 'PAGO', 'PAGO'
-        PAGO_RAFE = 'PAGO RAFE', 'PAGO RAFE'
-        SEM_PAGAMNTO = 'SEM PAGAMENTO', 'SEM PAGAMENTO'
+        SEM_PAGAMNTO = 'SEM_PAGAMENTO', 'SEM PAGAMENTO'
+        # PREVISAO =  'PREVISÃO', 'PREVISÃO'
+        # FINALIZADO = 'FINALIZADO', 'FINALIZADO'
+        # FINALIZADO_RAFE = 'FINALIZADO RAFE', 'FINALIZADO RAFE'
+        # PAGO = 'PAGO', 'PAGO'
+        PAGAR_RAFE = 'PAGAR_RAFE', 'Pagar RAFE'
+        PAGO_RAFE_OK = 'PAGO_RAFE_OK', 'PAGO RAFE OK'
+        PAGAR_INTEGRAL = 'PAGAR_INTEGRAL', 'Pagar INTEGRAL'
+        PAGO_INTEGRAL_OK = 'PAGO_INTEGRAL_OK', 'PAGO INTEGRAL OK'
+        PAGAR_FINALIZACAO_DO_RAFE = 'PAGAR_FINALIZACAO_DO_RAFE', 'Pagar FINALIZAÇÃO DO RAFE'
+        PAGO_FINALIZACAO_DO_RAFE_OK = 'PAGO_FINALIZACAO_DO_RAFE_OK', 'Pago FINALIZAÇÃO DO RAFE OK'
     retranca = models.CharField('Retranca', max_length=100, unique=True) #
     descricao = models.TextField('Descrição', max_length=2000) #
     volume = models.PositiveIntegerField('Volume', null=False, blank=False) #
