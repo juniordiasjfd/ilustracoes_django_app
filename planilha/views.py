@@ -757,161 +757,177 @@ class UploadUpdateIlustracoesExcelView(LoginRequiredMixin, FormView):
                     foi_alterada = False
                     
                     # --- Processa e valida o novo STATUS ---
-                    novo_status_label = str(row.get('status', '')).strip()
-                    # Garante que o valor do Excel seja um valor válido do StatusChoices
-                    # O .values contém os valores internos (e.g., 'EDICAO_EQUIPE')
-                    if novo_status_label in Ilustracao.StatusChoices.values:
-                        if il.status != novo_status_label:
-                            il.status = novo_status_label
-                            lista_de_campos_a_atualizar.append('status')
-                            if il not in ilustracoes_para_atualizar: 
-                                ilustracoes_para_atualizar.append(il)
-                                foi_alterada = True
+                    if 'status' in df.columns:
+                        novo_status_label = str(row.get('status', '')).strip()
+                        # Garante que o valor do Excel seja um valor válido do StatusChoices
+                        # O .values contém os valores internos (e.g., 'EDICAO_EQUIPE')
+                        if novo_status_label in Ilustracao.StatusChoices.values:
+                            if il.status != novo_status_label:
+                                il.status = novo_status_label
+                                lista_de_campos_a_atualizar.append('status')
+                                if il not in ilustracoes_para_atualizar: 
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
 
                     # --- Processa e valida o novo PAGAMENTO ---
-                    novo_pagamento_label = str(row.get('pagamento', '')).strip()
-                    # Garante que o valor do Excel seja um valor válido do PagamentoChoices
-                    if novo_pagamento_label in Ilustracao.PagamentoChoices.values:
-                        if il.pagamento != novo_pagamento_label:
-                            il.pagamento = novo_pagamento_label
-                            lista_de_campos_a_atualizar.append('pagamento')
-                            if il not in ilustracoes_para_atualizar: 
-                                ilustracoes_para_atualizar.append(il)
-                                foi_alterada = True
+                    if 'pagamento' in df.columns:
+                        novo_pagamento_label = str(row.get('pagamento', '')).strip()
+                        novo_pagamento_value = None
+                        for choice in Ilustracao.PagamentoChoices:
+                            if choice.label == novo_pagamento_label:
+                                novo_pagamento_value = choice.value
+                                break
+
+                                # Garante que o valor do Excel seja um valor válido do PagamentoChoices
+                        if novo_pagamento_label in Ilustracao.PagamentoChoices.labels:
+                            if il.pagamento != novo_pagamento_value:
+                                il.pagamento = novo_pagamento_value
+                                lista_de_campos_a_atualizar.append('pagamento')
+                                if il not in ilustracoes_para_atualizar: 
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
                     
                     # --- Processa e valida o novo TIPO ---
-                    novo_tipo_label = str(row.get('tipo', '')).strip()
-                    # Garante que o valor do Excel seja um valor válido
-                    if novo_tipo_label in Ilustracao.TipoChoices.values:
-                        if il.tipo != novo_tipo_label:
-                            il.tipo = novo_tipo_label
-                            lista_de_campos_a_atualizar.append('tipo')
-                            if il not in ilustracoes_para_atualizar: 
-                                ilustracoes_para_atualizar.append(il)
-                                foi_alterada = True
+                    if 'tipo' in df.columns:
+                        novo_tipo_label = str(row.get('tipo', '')).strip()
+                        # Garante que o valor do Excel seja um valor válido
+                        if novo_tipo_label in Ilustracao.TipoChoices.values:
+                            if il.tipo != novo_tipo_label:
+                                il.tipo = novo_tipo_label
+                                lista_de_campos_a_atualizar.append('tipo')
+                                if il not in ilustracoes_para_atualizar: 
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
                     
                     # --- Processa e valida o nova CATEGORIA ---
-                    nova_categoria_label = str(row.get('categoria', '')).strip()
-                    # Garante que o valor do Excel seja um valor válido
-                    if nova_categoria_label in Ilustracao.CategoriaChoices.values:
-                        if il.categoria != nova_categoria_label:
-                            il.categoria = nova_categoria_label
-                            lista_de_campos_a_atualizar.append('categoria')
-                            if il not in ilustracoes_para_atualizar: 
-                                ilustracoes_para_atualizar.append(il)
-                                foi_alterada = True
+                    if 'categoria' in df.columns:
+                        nova_categoria_label = str(row.get('categoria', '')).strip()
+                        # Garante que o valor do Excel seja um valor válido
+                        if nova_categoria_label in Ilustracao.CategoriaChoices.values:
+                            if il.categoria != nova_categoria_label:
+                                il.categoria = nova_categoria_label
+                                lista_de_campos_a_atualizar.append('categoria')
+                                if il not in ilustracoes_para_atualizar: 
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
 
                     # --- Processa e valida o nova LOCALIZAÇÃO ---
-                    nova_localizacao_label = str(row.get('localizacao', '')).strip()
-                    # Garante que o valor do Excel seja um valor válido
-                    if nova_localizacao_label in Ilustracao.LocalizacaoChoices.values:
-                        if il.localizacao != nova_localizacao_label:
-                            il.localizacao = nova_localizacao_label
-                            lista_de_campos_a_atualizar.append('localizacao')
-                            if il not in ilustracoes_para_atualizar: 
-                                ilustracoes_para_atualizar.append(il)
-                                foi_alterada = True
+                    if 'localizacao' in df.columns:
+                        nova_localizacao_label = str(row.get('localizacao', '')).strip()
+                        # Garante que o valor do Excel seja um valor válido
+                        if nova_localizacao_label in Ilustracao.LocalizacaoChoices.values:
+                            if il.localizacao != nova_localizacao_label:
+                                il.localizacao = nova_localizacao_label
+                                lista_de_campos_a_atualizar.append('localizacao')
+                                if il not in ilustracoes_para_atualizar: 
+                                    ilustracoes_para_atualizar.append(il)
+                                    foi_alterada = True
                     
                     # -- Processa e valida o LOTE ---
-                    processar = False
-                    novo_lote_label = str(row.get('lote','')).strip()
-                    # print('novo_lote_label',novo_lote_label, il)
-                    if novo_lote_label == 'nan':
-                        novo_lote_label = None
-                    try:
-                        novo_lote_label = (None if novo_lote_label == None else int(float(novo_lote_label)))
-                        if novo_lote_label == None:
-                            processar = True
-                        elif novo_lote_label >= 0:
-                            processar = True
-                        if processar:
-                            if il.lote != novo_lote_label:
-                                il.lote = novo_lote_label
-                                lista_de_campos_a_atualizar.append('lote')
-                                if il not in ilustracoes_para_atualizar:
-                                    ilustracoes_para_atualizar.append(il)
-                                    foi_alterada = True
-                    except: pass
+                    if 'lote' in df.columns:
+                        processar = False
+                        novo_lote_label = str(row.get('lote','')).strip()
+                        # print('novo_lote_label',novo_lote_label, il)
+                        if novo_lote_label == 'nan':
+                            novo_lote_label = None
+                        try:
+                            novo_lote_label = (None if novo_lote_label == None else int(float(novo_lote_label)))
+                            if novo_lote_label == None:
+                                processar = True
+                            elif novo_lote_label >= 0:
+                                processar = True
+                            if processar:
+                                if il.lote != novo_lote_label:
+                                    il.lote = novo_lote_label
+                                    lista_de_campos_a_atualizar.append('lote')
+                                    if il not in ilustracoes_para_atualizar:
+                                        ilustracoes_para_atualizar.append(il)
+                                        foi_alterada = True
+                        except: pass
 
                     # -- Processa e valida o CLASSIFICAÇÃO ---
-                    processar = False
-                    nova_classificacao_label = str(row.get('classificacao','')).strip()
-                    if nova_classificacao_label == 'nan':
-                        nova_classificacao_label = None
-                    try:
-                        nova_classificacao_label = (None if nova_classificacao_label == None else int(float(nova_classificacao_label)))
-                        if nova_classificacao_label == None:
-                            processar = True
-                        elif nova_classificacao_label >= 0:
-                            processar = True
-                        if processar:
-                            if il.classificacao != nova_classificacao_label:
-                                il.classificacao = nova_classificacao_label
-                                lista_de_campos_a_atualizar.append('classificacao')
-                                if il not in ilustracoes_para_atualizar:
-                                    ilustracoes_para_atualizar.append(il)
-                                    foi_alterada = True
-                    except: pass
+                    if 'classificacao' in df.columns:
+                        processar = False
+                        nova_classificacao_label = str(row.get('classificacao','')).strip()
+                        if nova_classificacao_label == 'nan':
+                            nova_classificacao_label = None
+                        try:
+                            nova_classificacao_label = (None if nova_classificacao_label == None else int(float(nova_classificacao_label)))
+                            if nova_classificacao_label == None:
+                                processar = True
+                            elif nova_classificacao_label >= 0:
+                                processar = True
+                            if processar:
+                                if il.classificacao != nova_classificacao_label:
+                                    il.classificacao = nova_classificacao_label
+                                    lista_de_campos_a_atualizar.append('classificacao')
+                                    if il not in ilustracoes_para_atualizar:
+                                        ilustracoes_para_atualizar.append(il)
+                                        foi_alterada = True
+                        except: pass
 
                     # -- Processa e valida o VOLUME ---
-                    processar = False
-                    novo_volume_label = str(row.get('volume','')).strip()
-                    if novo_volume_label == 'nan':
-                        novo_volume_label = None
-                    try:
-                        novo_volume_label = (None if novo_volume_label == None else int(float(novo_volume_label)))
-                        if novo_volume_label == None:
-                            processar = True
-                        elif novo_volume_label >= 0:
-                            processar = True
-                        if processar:
-                            if il.volume != novo_volume_label:
-                                il.volume = novo_volume_label
-                                lista_de_campos_a_atualizar.append('volume')
-                                if il not in ilustracoes_para_atualizar:
-                                    ilustracoes_para_atualizar.append(il)
-                                    foi_alterada = True
-                    except: pass
+                    if 'volume' in df.columns:
+                        processar = False
+                        novo_volume_label = str(row.get('volume','')).strip()
+                        if novo_volume_label == 'nan':
+                            novo_volume_label = None
+                        try:
+                            novo_volume_label = (None if novo_volume_label == None else int(float(novo_volume_label)))
+                            if novo_volume_label == None:
+                                processar = True
+                            elif novo_volume_label >= 0:
+                                processar = True
+                            if processar:
+                                if il.volume != novo_volume_label:
+                                    il.volume = novo_volume_label
+                                    lista_de_campos_a_atualizar.append('volume')
+                                    if il not in ilustracoes_para_atualizar:
+                                        ilustracoes_para_atualizar.append(il)
+                                        foi_alterada = True
+                        except: pass
 
                     # -- Processa e valida o UNIDADE ---
-                    processar = False
-                    nova_unidade_label = str(row.get('unidade','')).strip()
-                    if nova_unidade_label == 'nan':
-                        nova_unidade_label = None
-                    try:
-                        nova_unidade_label = (None if nova_unidade_label == None else int(float(nova_unidade_label)))
-                        if nova_unidade_label == None:
-                            processar = True
-                        elif nova_unidade_label >= 0:
-                            processar = True
-                        if processar:
-                            if il.unidade != nova_unidade_label:
-                                il.unidade = nova_unidade_label
-                                lista_de_campos_a_atualizar.append('unidade')
-                                if il not in ilustracoes_para_atualizar:
-                                    ilustracoes_para_atualizar.append(il)
-                                    foi_alterada = True
-                    except: pass
+                    if 'unidade' in df.columns:
+                        processar = False
+                        nova_unidade_label = str(row.get('unidade','')).strip()
+                        if nova_unidade_label == 'nan':
+                            nova_unidade_label = None
+                        try:
+                            nova_unidade_label = (None if nova_unidade_label == None else int(float(nova_unidade_label)))
+                            if nova_unidade_label == None:
+                                processar = True
+                            elif nova_unidade_label >= 0:
+                                processar = True
+                            if processar:
+                                if il.unidade != nova_unidade_label:
+                                    il.unidade = nova_unidade_label
+                                    lista_de_campos_a_atualizar.append('unidade')
+                                    if il not in ilustracoes_para_atualizar:
+                                        ilustracoes_para_atualizar.append(il)
+                                        foi_alterada = True
+                        except: pass
 
                     # -- Processa e valida o PÁGINA ---
-                    processar = False
-                    nova_pagina_label = str(row.get('pagina','')).strip()
-                    if nova_pagina_label == 'nan':
-                        nova_pagina_label = None
-                    try:
-                        nova_pagina_label = (None if nova_pagina_label == None else int(float(nova_pagina_label)))
-                        if nova_pagina_label == None:
-                            processar = True
-                        elif nova_pagina_label >= 0:
-                            processar = True
-                        if processar:
-                            if il.pagina != nova_pagina_label:
-                                il.pagina = nova_pagina_label
-                                lista_de_campos_a_atualizar.append('pagina')
-                                if il not in ilustracoes_para_atualizar:
-                                    ilustracoes_para_atualizar.append(il)
-                                    foi_alterada = True
-                    except: pass
+                    if 'pagina' in df.columns:
+                        processar = False
+                        nova_pagina_label = str(row.get('pagina','')).strip()
+                        if nova_pagina_label == 'nan':
+                            nova_pagina_label = None
+                        try:
+                            nova_pagina_label = (None if nova_pagina_label == None else int(float(nova_pagina_label)))
+                            if nova_pagina_label == None:
+                                processar = True
+                            elif nova_pagina_label >= 0:
+                                processar = True
+                            if processar:
+                                if il.pagina != nova_pagina_label:
+                                    il.pagina = nova_pagina_label
+                                    lista_de_campos_a_atualizar.append('pagina')
+                                    if il not in ilustracoes_para_atualizar:
+                                        ilustracoes_para_atualizar.append(il)
+                                        foi_alterada = True
+                        except: pass
 
                     # -- Processa e valida o campo CAPITULO_SECAO ---
                     if 'capitulo_secao' in df.columns:
