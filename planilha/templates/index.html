@@ -21,6 +21,43 @@
 
   </div>
 
+  {% if dashboards %}
+    <div class="container mt-4">
+      <h1 class="mb-4">Dashboards</h1>
+
+      <div class="row">
+        {% for dashboard in dashboards %}
+
+        <div class="col-md-6 mb-4">
+          <div class="card h-100 shadow-sm">
+
+            <div class="card-body">
+              <h5 class="card-title">{{ dashboard.nome }}</h5>
+
+              {% if dashboard.texto_intro %}
+                <p class="card-text text-muted">
+                  {{ dashboard.texto_intro }}
+                </p>
+              {% endif %}
+
+              <div class="ratio ratio-16x9">
+                <iframe 
+                  src="{{ dashboard.embed_url }}"
+                  title="{{ dashboard.nome }}"
+                  allowfullscreen>
+                </iframe>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {% endfor %}
+      </div>
+    </div>
+    <hr>
+  {% endif %}
+
   <div class="container">
     <h1>Menu</h1>
     <div class="row">

@@ -29,6 +29,8 @@ from django.core.paginator import Paginator
 
 from ilustracoes.settings import RELATORIO_GERI
 
+from assets.models import Dashboard
+
 
 def to_data_aware(date_naive):
     # 1. Crie o datetime naive
@@ -41,7 +43,11 @@ def is_coordenador(user):
 
 
 def index(request):
-    return render(request, 'index.html')
+    dashboards = Dashboard.objects.filter(ativo=True)
+    context = {
+        'dashboards': dashboards
+    }
+    return render(request, 'index.html', context)
 
 
 def aplicar_pre_filtro_ilustras(request, queryset_base):
