@@ -126,6 +126,7 @@ class PreferenciasPreFiltro(Base):
         null=True,
     )
     registros_por_pagina = models.PositiveIntegerField('Número de ilustrações por página', default=100)
+    abrir_ilustracaoupdateview_em_nova_aba = models.BooleanField('Abrir detalhe da ilustração em nova aba', default=True)
 
     class Meta:
         verbose_name = 'Preferência de Pré-Filtro'

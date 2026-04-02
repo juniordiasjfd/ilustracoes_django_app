@@ -342,7 +342,12 @@
                                 <td title="Projeto" {% if not preferencias_colunas.exibir_projeto %} hidden {% endif %}>{{ il.projeto|default:"" }}</td>
                                 <td title="Componente" {% if not preferencias_colunas.exibir_componente %} hidden {% endif %}>{{ il.componente|default:"" }}</td>
                                 <td class="text-nowrap">
-                                    <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info" target="_blank"
+                                    <a href="{% url 'detalhe_ilustracao' il.pk %}" class="btn btn-sm btn-info" 
+                                        {% if abrir_ilustracaoupdateview_em_nova_aba %}
+                                            target="_blank"
+                                        {% else %}
+                                            target="_self"
+                                        {% endif %}
                                         title="Use Ctrl + Clique para abrir em nova janela">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>

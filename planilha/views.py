@@ -110,6 +110,9 @@ def ilustras(request):
         # Se não houver preferências salvas, cria-se um objeto temporário com os defaults
         preferencias_colunas = PreferenciasColunasTabela()
     ###############################################
+    obj, created = PreferenciasPreFiltro.objects.get_or_create(usuario=request.user)
+    abrir_ilustracaoupdateview_em_nova_aba = obj.abrir_ilustracaoupdateview_em_nova_aba
+    ###############################################
     # filter = IlustracaoFilter(request.GET, queryset=Ilustracao.objects.filter(ativo=True))
     queryset_ordenado = queryset_filtrado.order_by('-lote')
     filter = IlustracaoFilter(request.GET, queryset=queryset_ordenado)
@@ -141,6 +144,7 @@ def ilustras(request):
         'pre_filtro_ativo': pre_filtro_ativo,
         'preferencias_colunas': preferencias_colunas,
         'RELATORIO_GERI': RELATORIO_GERI,
+        'abrir_ilustracaoupdateview_em_nova_aba': abrir_ilustracaoupdateview_em_nova_aba,
     }
     return render(request, 'ilustras.html', context)
 @login_required
@@ -169,6 +173,9 @@ def ilustras_excluidas(request):
         # Fallback seguro para que o template não quebre se o objeto de preferências não existir
         preferencias_colunas = PreferenciasColunasTabela()
     
+    ###############################################
+    obj, created = PreferenciasPreFiltro.objects.get_or_create(usuario=request.user)
+    abrir_ilustracaoupdateview_em_nova_aba = obj.abrir_ilustracaoupdateview_em_nova_aba
     ###############################################
     
     # 4. Aplica o Filtro Principal (Django-Filter) e Ordena
@@ -201,6 +208,8 @@ def ilustras_excluidas(request):
         'num_linhas_total': num_linhas_total,
         'pre_filtro_ativo': pre_filtro_ativo,
         'preferencias_colunas': preferencias_colunas,
+        'RELATORIO_GERI': RELATORIO_GERI,
+        'abrir_ilustracaoupdateview_em_nova_aba': abrir_ilustracaoupdateview_em_nova_aba,
     }
     return render(request, 'ilustras.html', context)
 @login_required

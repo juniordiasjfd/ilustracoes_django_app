@@ -11,6 +11,7 @@ class PreferenciasPreFiltroModelForm(forms.ModelForm):
         fields = [
             'projetos', 'componentes', 'tipos',
             'volume', 'registros_por_pagina',
+            'abrir_ilustracaoupdateview_em_nova_aba',
         ]
         # 1. Adicionando Widgets para UX
         widgets = {
