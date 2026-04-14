@@ -106,6 +106,16 @@ class IlustracaoFilter(django_filters.FilterSet):
             'type': 'date'
         })
     )
+    data_finalizacao_vazia = django_filters.BooleanFilter(
+        method='filter_data_finalizacao_vazia',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Sem data de finalização'
+    )
+    data_finalizacao_preenchida = django_filters.BooleanFilter(
+        method='filter_data_finalizacao_preenchida',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Com data de finalização'
+    )
     # lote = django_filters.NumberFilter(
     #     lookup_expr='exact',
     #     widget=forms.NumberInput(attrs={'class': 'form-control'}),
@@ -124,6 +134,14 @@ class IlustracaoFilter(django_filters.FilterSet):
         # value é False (ou None/não selecionado): não aplicar filtro adicional
         # Se você quiser filtrar APENAS lotes nulos quando False, altere a lógica.
         # Por padrão, False ou não marcado não filtra.
+        return queryset
+    def filter_data_finalizacao_vazia(self, queryset, name, value):
+        if value:
+            return queryset.filter(data_recebimento_finalizada__isnull=True)
+        return queryset
+    def filter_data_finalizacao_preenchida(self, queryset, name, value):
+        if value:
+            return queryset.filter(data_recebimento_finalizada__isnull=False)
         return queryset
     class Meta:
         model = Ilustracao
