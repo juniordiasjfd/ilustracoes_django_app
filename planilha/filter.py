@@ -84,6 +84,12 @@ class IlustracaoFilter(django_filters.FilterSet):
         label='Categoria',
         help_text='Use Ctrl para selecionar dois ou mais.'
     )
+    localizacao = django_filters.MultipleChoiceFilter(
+        choices=Ilustracao.LocalizacaoChoices.choices,
+        widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
+        label='Localização',
+        help_text='Use Ctrl para selecionar dois ou mais.'
+    )
     tipo = django_filters.MultipleChoiceFilter(
         choices=Ilustracao.TipoChoices.choices,
         widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
