@@ -1599,9 +1599,17 @@ def exportar_base_completa_ilustracoes_csv(request):
     writer.writerow(cabecalho)
 
     # 3. Escrever os dados
-    queryset = Ilustracao.objects.all()
-    
-    for obj in queryset:
+    queryset = Ilustracao.objects.select_related(
+        'ilustrador',
+        'ilustrador_ajuste',
+        'credito',
+        'projeto',
+        'componente',
+        'criado_por',
+        'atualizado_por',
+    ).order_by('id')
+
+    for obj in queryset.iterator(chunk_size=500):
         linha = []
         for nome in nomes_colunas:
             valor = getattr(obj, nome)
