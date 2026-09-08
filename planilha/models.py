@@ -122,7 +122,7 @@ class Ilustracao(Base):
         PAGAR_FINALIZACAO_DO_RAFE = 'PAGAR_FINALIZACAO_DO_RAFE', 'Pagar FINALIZAÇÃO DO RAFE'
         PAGO_FINALIZACAO_DO_RAFE_OK = 'PAGO_FINALIZACAO_DO_RAFE_OK', 'Pago FINALIZAÇÃO DO RAFE OK'
     retranca = models.CharField('Retranca', max_length=100, unique=True) #
-    descricao = models.TextField('Descrição', max_length=2000) #
+    descricao = models.TextField('Descrição', max_length=4000) #
     volume = models.PositiveIntegerField('Volume', null=False, blank=False) #
     pagina = models.PositiveIntegerField('Página', null=True, blank=True) #
     unidade = models.PositiveIntegerField('Unidade', null=True, blank=True) #
