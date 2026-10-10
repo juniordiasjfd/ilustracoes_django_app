@@ -21,6 +21,19 @@
 
   </div>
 
+  {% if links_extras %}
+    <div class="container mt-4">
+      <div class="d-flex flex-wrap justify-content-center">
+        {% for link in links_extras %}
+          <a href="{{ link.url }}" class="btn btn-outline-secondary m-1"
+            {% if link.nova_aba %}target="_blank" rel="noopener noreferrer"{% endif %}>
+            <i class="{{ link.icone }}"></i> {{ link.titulo }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
   {% if dashboards %}
     <div class="container mt-4">
       <h1 class="mb-4">Dashboards</h1>

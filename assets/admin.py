@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Dashboard
+from .models import Dashboard, LinksExtrasDaPaginaInicial
 
 
 @admin.register(Dashboard)
@@ -9,3 +9,6 @@ class DashboardAdmin(admin.ModelAdmin):
     search_fields = ("nome",)
     list_filter = ("ativo",)
     ordering = ("ordem", "nome")
+
+
+admin.site.register(LinksExtrasDaPaginaInicial)

@@ -29,7 +29,7 @@ from django.core.paginator import Paginator
 
 from ilustracoes.settings import RELATORIO_GERI
 
-from assets.models import Dashboard
+from assets.models import Dashboard, LinksExtrasDaPaginaInicial
 
 
 def to_data_aware(date_naive):
@@ -44,8 +44,10 @@ def is_coordenador(user):
 
 def index(request):
     dashboards = Dashboard.objects.filter(ativo=True)
+    links_extras = LinksExtrasDaPaginaInicial.objects.filter(ativo=True)
     context = {
-        'dashboards': dashboards
+        'dashboards': dashboards,
+        'links_extras': links_extras,
     }
     return render(request, 'index.html', context)
 
